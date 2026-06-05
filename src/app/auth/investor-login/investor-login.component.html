@@ -1,0 +1,42 @@
+<div class="login-shell">
+
+    <div class="login-card">
+
+        <div class="brand">
+            <div class="logo">💰</div>
+            <h1>G1Farm Investor</h1>
+        </div>
+
+        <form [formGroup]="loginForm">
+
+            <div class="field">
+
+                <label>Mobile Number</label>
+
+                <input type="text" formControlName="mobileNumber" placeholder="Enter mobile number" />
+
+            </div>
+
+            <div class="field">
+
+                <label>Password</label>
+
+                <input type="password" formControlName="password" placeholder="Enter password" />
+
+            </div>
+
+            <button class="btn-login" (click)="login()" [disabled]="isLoading">
+
+                {{ isLoading ? 'Logging in...' : 'Login' }}
+
+            </button>
+
+            <p class="error" *ngIf="errorMessage">
+                {{ errorMessage }}
+            </p>
+
+        </form>
+
+    </div>
+
+</div>

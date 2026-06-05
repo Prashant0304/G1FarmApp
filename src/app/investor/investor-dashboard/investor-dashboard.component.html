@@ -1,0 +1,704 @@
+<div class="dashboard-root" [class.sidebar-collapsed]="sidebarCollapsed">
+
+    <!-- ===== SIDEBAR ===== -->
+    <!-- <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon" *ngIf="!sidebarCollapsed">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.93 0 3.5 1.57 3.5 3.5S13.93 12 12 12s-3.5-1.57-3.5-3.5S10.07 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+                        fill="currentColor" />
+                </svg>
+            </div>
+            <span class="brand-name" *ngIf="!sidebarCollapsed">Farm Investor </span>
+            <button class="sidebar-toggle" (click)="toggleSidebar()"
+                [attr.aria-label]="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label" *ngIf="!sidebarCollapsed">Main</div>
+            <a class="nav-item" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor" />
+                </svg>
+                <span class="nav-label" *ngIf="!sidebarCollapsed">Overview</span>
+            </a>
+            <a class="nav-item" [class.active]="activeTab === 'portfolio'" (click)="setActiveTab('portfolio')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M20 6h-2.18c.07-.44.18-.88.18-1.35C18 2.08 15.86 0 13.5 0c-1.3 0-2.51.6-3.5 1.68C9.01.6 7.8 0 6.5 0 4.14 0 2 2.08 2 4.65c0 .47.11.91.18 1.35H0v14h24V6h-4zM13.5 2c.96 0 1.82.84 2 2.09L16 6h-4.98l.45-1.86C11.72 2.84 12.54 2 13.5 2zM4 4.65C4 3.19 5.07 2 6.5 2c.96 0 1.77.84 1.98 2.09L8.96 6H4.02C3.99 5.78 4 5.22 4 4.65zM2 18V8h20v10H2z"
+                        fill="currentColor" />
+                </svg>
+                <span class="nav-label" *ngIf="!sidebarCollapsed">My Portfolio</span>
+            </a>
+            <a class="nav-item" [class.active]="activeTab === 'projects'" (click)="setActiveTab('projects')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 3L1 9l4 2.18V15h2v-2.82l2 1.09V17c0 1.1.9 2 2 2s2-.9 2-2v-3.73l4-2.18V15h2v-3.82L23 9 12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM10 17c0 1.1.9 2 2 2s2-.9 2-2v-1.09l-2 1.09-2-1.09V17z"
+                        fill="currentColor" />
+                </svg>
+                <span class="nav-label" *ngIf="!sidebarCollapsed">Projects</span>
+            </a>
+            <a class="nav-item" [class.active]="activeTab === 'payments'" (click)="setActiveTab('payments')">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"
+                        fill="currentColor" />
+                </svg>
+                <span class="nav-label" *ngIf="!sidebarCollapsed">Payments</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-profile" *ngIf="!sidebarCollapsed">
+            <div class="profile-avatar">{{ investor?.name?.charAt(0) }}{{ investor?.name?.split(' ')[1]?.charAt(0) }}
+            </div>
+            <div class="profile-info">
+                <span class="profile-name">{{ investor?.name }}</span>
+                <span class="profile-role">Investor</span>
+            </div>
+        </div>
+        <div class="sidebar-profile collapsed-profile" *ngIf="sidebarCollapsed">
+            <div class="profile-avatar">{{ investor?.name?.charAt(0) }}{{ investor?.name?.split(' ')[1]?.charAt(0) }}
+            </div>
+        </div>
+    </aside> -->
+    <!-- Overlay (Mobile Only) -->
+    <div class="sidebar-overlay" *ngIf="mobileSidebarOpen" (click)="closeSidebar()">
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" [class.collapsed]="sidebarCollapsed" [class.mobile-open]="mobileSidebarOpen">
+
+        <!-- Logo Section -->
+        <div class="sidebar-brand">
+
+            <div class="brand-icon" *ngIf="!sidebarCollapsed">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.93 0 3.5 1.57 3.5 3.5S13.93 12 12 12s-3.5-1.57-3.5-3.5S10.07 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+                        fill="currentColor" />
+                </svg>
+            </div>
+
+            <span class="brand-name" *ngIf="!sidebarCollapsed">
+                Farm Investor
+            </span>
+
+            <!-- Toggle Button -->
+            <button type="button" class="sidebar-toggle" (click)="toggleSidebar()">
+
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor">
+                    </path>
+                </svg>
+
+            </button>
+
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+
+            <div class="nav-section-label" *ngIf="!sidebarCollapsed">
+                Main
+            </div>
+
+            <!-- Dashboard -->
+            <a class="nav-item" [class.active]="activeTab === 'overview'"
+                (click)="setActiveTab('overview'); closeSidebar()">
+
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor">
+                    </path>
+                </svg>
+
+                <span class="nav-label" *ngIf="!sidebarCollapsed">
+                    Dashboard
+                </span>
+
+            </a>
+
+            <!-- Portfolio -->
+            <a class="nav-item" [class.active]="activeTab === 'portfolio'"
+                (click)="setActiveTab('portfolio'); closeSidebar()">
+
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M20 6h-2.18c.07-.44.18-.88.18-1.35C18 2.08 15.86 0 13.5 0c-1.3 0-2.51.6-3.5 1.68C9.01.6 7.8 0 6.5 0 4.14 0 2 2.08 2 4.65c0 .47.11.91.18 1.35H0v14h24V6h-4z"
+                        fill="currentColor">
+                    </path>
+                </svg>
+
+                <span class="nav-label" *ngIf="!sidebarCollapsed">
+                    My Portfolio
+                </span>
+
+            </a>
+
+            <!-- Projects -->
+            <a class="nav-item" [class.active]="activeTab === 'projects'"
+                (click)="setActiveTab('projects'); closeSidebar()">
+
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M12 3L1 9l4 2.18V15h2v-2.82l2 1.09V17c0 1.1.9 2 2 2s2-.9 2-2v-3.73l4-2.18V15h2v-3.82L23 9 12 3z"
+                        fill="currentColor">
+                    </path>
+                </svg>
+
+                <span class="nav-label" *ngIf="!sidebarCollapsed">
+                    Projects
+                </span>
+
+            </a>
+
+            <!-- Payments -->
+            <a class="nav-item" [class.active]="activeTab === 'payments'"
+                (click)="setActiveTab('payments'); closeSidebar()">
+
+                <svg class="nav-icon" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"
+                        fill="currentColor">
+                    </path>
+                </svg>
+
+                <span class="nav-label" *ngIf="!sidebarCollapsed">
+                    Payments
+                </span>
+
+            </a>
+
+        </nav>
+
+        <!-- Profile -->
+        <!-- <div class="sidebar-profile">
+
+            <div class="profile-avatar">
+                {{ investor?.name?.charAt(0) }}
+                {{ investor?.name?.split(' ')[1]?.charAt(0) }}
+            </div>
+
+            <div class="profile-info" *ngIf="!sidebarCollapsed">
+
+                <span class="profile-name">
+                    {{ investor?.name }}
+                </span>
+
+                <span class="profile-role">
+                    Investor
+                </span>
+
+            </div>
+
+        </div> -->
+
+        <!-- Profile -->
+        <div class="sidebar-profile">
+
+            <div class="profile-avatar" [attr.title]="sidebarCollapsed ? 'Sign Out' : null"
+                (click)="sidebarCollapsed ? logout() : null" [style.cursor]="sidebarCollapsed ? 'pointer' : 'default'">
+                {{ investor?.name?.charAt(0) }}
+                {{ investor?.name?.split(' ')[1]?.charAt(0) }}
+            </div>
+
+            <div class="profile-info" *ngIf="!sidebarCollapsed">
+                <span class="profile-name">
+                    {{ investor?.name }}
+                </span>
+                <span class="profile-role">
+                    Investor
+                </span>
+            </div>
+
+            <!-- Sign Out Button (Visible only when sidebar is expanded) -->
+            <button *ngIf="!sidebarCollapsed" type="button" class="logout-btn" (click)="logout()" title="Sign Out">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M16 17v-3H9v-4h7V7l5 5-5 5M14 2a2 2 0 0 0-2 2v2h2V4h6v16h-6v-2h-2v2a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-6z"
+                        fill="currentColor" />
+                </svg>
+            </button>
+
+        </div>
+    </aside>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- ===== TOP BAR ===== -->
+        <header class="topbar">
+            <button class="mobile-menu-btn" (click)="mobileSidebarOpen = true">
+
+                ☰
+
+            </button>
+            <div class="topbar-left">
+                <h1 class="page-title" *ngIf="activeTab === 'overview' ">Dashboard Overview</h1>
+                <h1 class="page-title" *ngIf="activeTab === 'portfolio'">My Portfolio</h1>
+                <h1 class="page-title" *ngIf="activeTab === 'projects'">Active Projects</h1>
+                <h1 class="page-title" *ngIf="activeTab === 'payments'">Payment Schedule</h1>
+                <p class="page-subtitle">{{ profile.city }} · Investor since {{ formatDate(profile.joinedDate) }}</p>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box" *ngIf="activeTab !== 'overview'">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" class="search-icon">
+                        <path
+                            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                            fill="currentColor" />
+                    </svg>
+                    <input type="text" placeholder="Search projects..." [(ngModel)]="searchQuery" />
+                </div>
+                <div class="notif-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+                            fill="currentColor" />
+                    </svg>
+                    <span class="notif-badge">3</span>
+                </div>
+            </div>
+        </header>
+
+
+        <div class="tab-content" *ngIf="activeTab === 'overview'">
+
+
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-primary">
+                    <div class="kpi-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Total Invested</span>
+                        <span class="kpi-value">{{dashboard?.totalInvested }}</span>
+                        <span class="kpi-delta positive">+₹2.9L this year</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-success">
+                    <div class="kpi-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Total Returns</span>
+                        <span class="kpi-value">{{ formatCurrency(dashboard?.totalReturns) }}</span>
+                        <span class="kpi-delta positive">+{{ dashboard?.roiPercentage }}% ROI</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-info">
+                    <div class="kpi-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Active Projects</span>
+                        <span class="kpi-value">{{ dashboard?.activeProjects }}</span>
+                        <span class="kpi-delta neutral">{{ dashboard?.completedProjects }} completed</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card kpi-warning">
+                    <div class="kpi-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <div class="kpi-body">
+                        <span class="kpi-label">Total Installments</span>
+                        <span class="kpi-value">{{ formatCurrency(dashboard?.totalInstallments) }}</span>
+                        <span class="kpi-delta positive">Installments</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-row">
+                <!-- Bar Chart: Monthly Activity -->
+                <div class="chart-card chart-main">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Investment Activity</h2>
+                            <p class="card-subtitle">Last 7 months</p>
+                        </div>
+                        <div class="legend-row">
+                            <span class="legend-dot" style="background:#3B6D11"></span><span
+                                class="legend-label">Invested</span>
+                            <span class="legend-dot" style="background:#97C459"></span><span
+                                class="legend-label">Returns</span>
+                        </div>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar-group" *ngFor="let d of investments">
+                            <div class="bars">
+                                <div class="bar bar-invested" [style.height.px]="d.invested / 1000"
+                                    [attr.title]="'Invested: ' + formatCurrency(d.invested)"></div>
+                                <div class="bar bar-returns" [style.height.px]="d.returns / 1000"
+                                    [attr.title]="'Returns: ' + formatCurrency(d.returns)"></div>
+                            </div>
+                            <span class="bar-label">{{ d.month }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donut: Crop Allocation -->
+                <div class="chart-card chart-side">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">Crop Allocation</h2>
+                            <p class="card-subtitle">By category</p>
+                        </div>
+                    </div>
+                    <div class="donut-wrapper">
+                        <svg class="donut-svg" viewBox="0 0 120 120">
+                            <!-- Fruits 55% -->
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#3B6D11" stroke-width="18"
+                                stroke-dasharray="155.5 127.3" stroke-dashoffset="0" transform="rotate(-90 60 60)" />
+                            <!-- Timber 32% -->
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#639922" stroke-width="18"
+                                stroke-dasharray="90.5 192.3" stroke-dashoffset="-155.5"
+                                transform="rotate(-90 60 60)" />
+                            <!-- Exotic 13% -->
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#97C459" stroke-width="18"
+                                stroke-dasharray="36.8 246" stroke-dashoffset="-246" transform="rotate(-90 60 60)" />
+                            <text x="60" y="56" text-anchor="middle" class="donut-pct">{{
+                                investor?.roiPercentage?.toFixed(1) }}%</text>
+                            <text x="60" y="68" text-anchor="middle" class="donut-sub">ROI</text>
+                        </svg>
+                        <div class="donut-legend">
+                            <div class="donut-item" *ngFor="let c of cropAllocation">
+                                <span class="donut-dot" [style.background]="c.color"></span>
+                                <span class="donut-name">{{ c.label }}</span>
+                                <span class="donut-pct-label">{{ c.value }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Investments Table -->
+            <div class="table-card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Recent Investments</h2>
+                        <p class="card-subtitle">Latest 4 project activities</p>
+                    </div>
+                    <button class="btn-link" (click)="setActiveTab('portfolio')">View All →</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Crop</th>
+                                <th>Invested</th>
+                                <th>Expected Return</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let inv of investments; trackBy: trackByInvestorId">
+
+                                <td>
+                                    <div class="proj-name">{{ inv?.project?.projectName }}</div>
+                                    <!-- <div class="proj-code">{{ inv?.project?.projectCode }}</div> -->
+                                </td>
+
+                                <td>
+                                    <span class="crop-tag">{{ inv?.cropKey }}</span>
+                                </td>
+
+                                <td class="amount-cell">
+                                    {{ formatCurrency(inv?.amountInvested) }}
+                                </td>
+
+                                <td class="return-cell">
+                                    {{ formatCurrency(inv?.expectedReturn) }}
+                                </td>
+
+                                <td>
+                                    <div class="progress-wrap">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" [style.width.%]="getProjectProgress(inv)">
+                                            </div>
+                                        </div>
+                                        <span class="progress-text">
+                                            {{ getProjectProgress(inv) }}%
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="status-badge" [ngClass]="getStatusClass(inv?.status)">
+                                        {{ inv?.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== PORTFOLIO TAB ===== -->
+        <div class="tab-content" *ngIf="activeTab === 'portfolio'">
+
+            <div class="filter-bar">
+                <div class="filter-tabs">
+                    <button class="filter-btn" [class.active]="selectedProjectFilter === 'All'"
+                        (click)="selectedProjectFilter = 'All'">All</button>
+                    <button class="filter-btn" [class.active]="selectedProjectFilter === 'Active'"
+                        (click)="selectedProjectFilter = 'Active'">Active</button>
+                    <button class="filter-btn" [class.active]="selectedProjectFilter === 'Completed'"
+                        (click)="selectedProjectFilter = 'Completed'">Completed</button>
+                    <button class="filter-btn" [class.active]="selectedProjectFilter === 'Pending'"
+                        (click)="selectedProjectFilter = 'Pending'">Pending</button>
+                </div>
+                <span class="filter-count">{{ filteredInvestments.length }} records</span>
+            </div>
+
+            <div class="portfolio-grid">
+                <div class="portfolio-card" *ngFor="let inv of filteredInvestments; trackBy: trackByInvestorId">
+                    <div class="pcard-header">
+                        <div class="pcard-title-group">
+                            <span class="status-badge" [ngClass]="getStatusClass(inv.status)">{{ inv.status }}</span>
+                            <span class="pcard-code">{{ inv.project.projectCode }}</span>
+                        </div>
+                        <span class="pcard-freq">{{ inv.paymentFrequency }}</span>
+                    </div>
+                    <h3 class="pcard-name">{{ inv.project.projectName }}</h3>
+                    <div class="pcard-meta">
+                        <span class="meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                                    fill="currentColor" />
+                            </svg>
+                            {{ inv.project.location }}
+                        </span>
+                        <span class="meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"
+                                    fill="currentColor" />
+                            </svg>
+                            {{ formatDate(inv.investmentDate) }}
+                        </span>
+                    </div>
+
+                    <div class="pcard-crops">
+                        <span class="crop-tag">{{ inv.cropKey }}</span>
+                        <span class="plant-count">{{ inv.plantCount }} plants</span>
+                    </div>
+
+                    <div class="pcard-financials">
+                        <div class="fin-item">
+                            <span class="fin-label">Invested</span>
+                            <span class="fin-value">{{ formatCurrency(inv.amountInvested) }}</span>
+                        </div>
+                        <div class="fin-divider"></div>
+                        <div class="fin-item">
+                            <span class="fin-label">Expected Return</span>
+                            <span class="fin-value fin-return">{{ formatCurrency(inv.expectedReturn) }}</span>
+                        </div>
+                        <div class="fin-divider"></div>
+                        <div class="fin-item">
+                            <span class="fin-label">ROI</span>
+                            <span class="fin-value fin-roi">+{{ inv.returnPercentage }}%</span>
+                        </div>
+                    </div>
+
+                    <div class="pcard-installments">
+                        <div class="inst-header">
+                            <span class="inst-label">Installments: {{ inv.paidInstallments }}/{{ inv.installmentCount
+                                }}</span>
+                            <span class="inst-amount">{{ formatCurrency(inv.installmentAmount) }} each</span>
+                        </div>
+                        <div class="progress-bar full">
+                            <div class="progress-fill" [style.width.%]="getInstallmentProgress(inv)"></div>
+                        </div>
+                    </div>
+
+                    <div class="pcard-footer">
+                        <div class="proj-progress">
+                            <span class="prog-label">Project Timeline</span>
+                            <div class="progress-bar full">
+                                <div class="progress-fill alt" [style.width.%]="getProjectProgress(inv)"></div>
+                            </div>
+                            <span class="prog-pct">{{ getProjectProgress(inv) }}%</span>
+                        </div>
+                        <div class="days-badge" [class.expired]="getDaysRemaining(inv.project.endDate) < 0">
+                            <span *ngIf="getDaysRemaining(inv.project.endDate) > 0">{{
+                                getDaysRemaining(inv.project.endDate) }}d left</span>
+                            <span *ngIf="getDaysRemaining(inv.project.endDate) <= 0">Matured</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PROJECTS TAB ===== -->
+        <div class="tab-content" *ngIf="activeTab === 'projects'">
+            <div class="projects-list">
+                <div class="project-detail-card" *ngFor="let inv of investor?.investments; trackBy: trackByInvestorId">
+                    <div class="pdc-left">
+                        <div class="pdc-badge" [ngClass]="getStatusClass(inv.project.status)">{{ inv.project.status }}
+                        </div>
+                        <div class="pdc-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M17 8C8 10 5.9 16.17 3.82 19.18A1 1 0 0 0 5.06 20.5C6.96 19.3 10.66 17.5 14 18c5 .5 7-2.7 7-2.7C20.9 12.7 17 8 17 8z"
+                                    fill="currentColor" />
+                            </svg>
+                        </div>
+                        <div class="pdc-info">
+                            <h3 class="pdc-name">{{ inv.project.projectName }}</h3>
+                            <span class="pdc-code">{{ inv.project.projectCode }}</span>
+                            <span class="pdc-loc">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                        fill="currentColor" />
+                                </svg>
+                                {{ inv.project.location }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="pdc-stats">
+                        <div class="pdc-stat">
+                            <span class="pdc-stat-label">Total Plants</span>
+                            <span class="pdc-stat-val">{{ inv.project.totalPlants }}</span>
+                        </div>
+                        <div class="pdc-stat">
+                            <span class="pdc-stat-label">My Plants</span>
+                            <span class="pdc-stat-val highlight">{{ inv.plantCount }}</span>
+                        </div>
+                        <div class="pdc-stat">
+                            <span class="pdc-stat-label">My Investment</span>
+                            <span class="pdc-stat-val">{{ formatCurrency(inv.amountInvested) }}</span>
+                        </div>
+                        <div class="pdc-stat">
+                            <span class="pdc-stat-label">Project Est.</span>
+                            <span class="pdc-stat-val">{{ formatCurrency(inv.project.estimatedInvestment) }}</span>
+                        </div>
+                        <div class="pdc-stat">
+                            <span class="pdc-stat-label">Duration</span>
+                            <span class="pdc-stat-val">{{ formatDate(inv.project.startDate) }}</span>
+                        </div>
+                        <div class="pdc-stat">
+                            <span class="pdc-stat-label">Maturity</span>
+                            <span class="pdc-stat-val">{{ formatDate(inv.project.endDate) }}</span>
+                        </div>
+                    </div>
+                    <div class="pdc-crops">
+                        <h4 class="pdc-crops-title">Crops in Project</h4>
+                        <div class="crop-list">
+                            <div class="crop-item" *ngFor="let crop of inv.project.crops">
+                                <div class="crop-item-name">{{ crop.cropKey }}</div>
+                                <div class="crop-item-cat">{{ crop.categoryKey }}</div>
+                                <div class="crop-item-stats">
+                                    <span>{{ crop.plantCount }} plants</span>
+                                    <span>{{ crop.estimatedYieldKg | number }}kg est.</span>
+                                    <span>{{ formatDate(crop.expectedHarvestDate) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== PAYMENTS TAB ===== -->
+        <div class="tab-content" *ngIf="activeTab === 'payments'">
+
+            <div class="payment-summary">
+                <div class="pay-sum-card">
+                    <span class="pay-sum-label">Total Installments</span>
+                    <span class="pay-sum-val">{{ paymentSchedules.reduce ? 0 : 0 }}</span>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Payment Schedule</h2>
+                        <p class="card-subtitle">All project installment records</p>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Crop</th>
+                                <th>Frequency</th>
+                                <th>Installment Amt</th>
+                                <th>Paid</th>
+                                <th>Remaining</th>
+                                <th>Total Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr *ngFor="let item of paymentSchedules">
+
+                                <td>{{ item.projectName }}</td>
+
+                                <td>{{ item.cropName }}</td>
+
+                                <td>{{ item.frequencyName }}</td>
+
+                                <td>₹{{ item.installmentAmount | number }}</td>
+
+                                <td>₹{{ item.paidAmount | number }}</td>
+
+                                <td>₹{{ item.remainingAmount | number }}</td>
+
+                                <td>₹{{ item.totalPaid | number }}</td>
+
+                                <td>
+                                    <span class="status" [ngClass]="item.status.toLowerCase()">
+                                        {{ item.status }}
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-footer-row">
+                                <td colspan="3"><strong>Totals</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="amount-cell total-cell">
+                                    <!-- <strong>{{ formatCurrency(investor.investments.reduce((s, i) => s +
+                                        i.paidInstallments * i.installmentAmount, 0)) }}</strong> -->
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>

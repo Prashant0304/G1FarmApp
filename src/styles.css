@@ -1,0 +1,59 @@
+/* You can add global styles to this file, and also import other style files */
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+/* =====================================================
+   ADD TO YOUR GLOBAL styles.css
+   (Font import + CSS variables must be global in Angular)
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  /* ── Brand greens ── */
+  --c-green-deep:   #1a5c38;
+  --c-green-mid:    #2d8653;
+  --c-green-light:  #4caf7d;
+  --c-green-pale:   #e8f5ee;
+  --c-green-mist:   #f0f9f4;
+ 
+  /* ── Accent ── */
+  --c-amber:        #e8a83a;
+  --c-amber-pale:   #fef8ec;
+ 
+  /* ── Neutrals ── */
+  --c-parchment:    #faf7f2;
+  --c-white:        #ffffff;
+  --c-ink:          #1c2b22;
+  --c-ink-soft:     #4a6155;
+  --c-ink-faint:    #8faa99;
+  --c-border:       #d6e8dc;
+ 
+  /* ── Shadows ── */
+  --c-shadow-sm:    0 2px 8px rgba(26,92,56,.08);
+  --c-shadow-md:    0 6px 24px rgba(26,92,56,.12);
+  --c-shadow-lg:    0 16px 48px rgba(26,92,56,.16);
+ 
+  /* ── Radii ── */
+  --c-radius-sm:    10px;
+  --c-radius-md:    16px;
+  --c-radius-lg:    24px;
+ 
+  /* ── Transitions ── */
+  --c-transition:   all .22s cubic-bezier(.4,0,.2,1);
+}
+ 
+/* Reset body to use parchment background */
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--c-parchment);
+  color: var(--c-ink);
+  -webkit-font-smoothing: antialiased;
+}
+ 
+*, *::before, *::after { box-sizing: border-box; }
+ 
+/* Remove default router-outlet spacing */
+router-outlet { display: none; }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -1,0 +1,679 @@
+<div class="create-project">
+
+  <!-- ══════════════════════════════════
+       PAGE HEADER
+       ══════════════════════════════════ -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <p class="page-header-breadcrumb">
+        <i class="bi bi-diagram-3-fill"></i> Projects
+        <i class="bi bi-chevron-right"></i> Create New
+      </p>
+      <h1 class="page-header-title">
+        Create <span class="title-accent">Project</span>
+      </h1>
+      <p class="page-header-sub">Set up a new farm project in three easy steps.</p>
+    </div>
+    <div class="page-header-right" *ngIf="projectId">
+      <div class="project-id-pill">
+        <i class="bi bi-hash"></i>
+        Project ID: <strong>{{ projectName }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       STEP PROGRESS BAR
+       ══════════════════════════════════ -->
+  <div class="step-progress-bar">
+    <div class="step-track">
+      <div class="step-fill" [style.width]="((currentStep - 1) / (totalSteps - 1) * 100) + '%'"></div>
+    </div>
+    <div class="step-nodes">
+      <div *ngFor="let s of [1,2,3]" class="step-node" [class.active]="currentStep === s"
+        [class.done]="currentStep > s">
+        <div class="step-circle">
+          <i *ngIf="currentStep > s" class="bi bi-check-lg"></i>
+          <span *ngIf="currentStep <= s">{{ s }}</span>
+        </div>
+        <span class="step-label">{{ ['Project Info','Crops','Investors'][s-1] }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       FORM CARD
+       ══════════════════════════════════ -->
+  <div class="form-card">
+
+    <!-- ════════════════════════════════
+         STEP 1 — Project Info
+         ════════════════════════════════ -->
+    <div class="step-pane" *ngIf="currentStep === 1">
+      <div class="step-pane-header">
+        <div class="step-pane-icon green">
+          <i class="bi bi-diagram-3-fill"></i>
+        </div>
+        <div>
+          <h2 class="step-pane-title">Project Information</h2>
+          <p class="step-pane-sub">Basic details and investment parameters</p>
+        </div>
+      </div>
+
+      <form [formGroup]="projectForm" novalidate>
+
+        <div class="form-grid three-col">
+
+          <!-- Project Name -->
+          <div class="field-group full-width" [class.has-error]="isInvalid('projectName')"
+            [class.has-success]="isValid('projectName')">
+            <label class="field-label">Project Name <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="bi bi-briefcase input-icon"></i>
+              <input type="text" formControlName="projectName" class="field-input" placeholder="e.g. Mango Farm Phase 1"
+                autocomplete="off" />
+              <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('projectName')"></i>
+            </div>
+            <span class="field-error" *ngIf="isInvalid('projectName')">
+              <i class="bi bi-exclamation-circle"></i>
+              <ng-container *ngIf="projectForm.get('projectName')?.errors?.['required']">Project name is
+                required.</ng-container>
+              <ng-container *ngIf="projectForm.get('projectName')?.errors?.['minlength']">Minimum 3
+                characters.</ng-container>
+            </span>
+          </div>
+
+          <!-- Project Code -->
+          <div class="field-group">
+            <label class="field-label">Project Code</label>
+            <div class="input-wrap">
+              <i class="bi bi-upc input-icon"></i>
+              <input type="text" formControlName="projectCode" class="field-input" placeholder="e.g. PRJ-2026-01"
+                autocomplete="off" />
+            </div>
+          </div>
+
+          <!-- Land Selection -->
+          <div class="field-group full-width">
+            <label class="field-label">Land <span class="req">*</span></label>
+
+            <!-- Selected land preview card -->
+            <div class="selected-land-card" *ngIf="selectedLand" (click)="openLandPicker()">
+              <div class="slc-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div class="slc-info">
+                <p class="slc-location">{{ selectedLand.LandLocation }}</p>
+                <p class="slc-meta">
+                  <span><i class="bi bi-person"></i> {{ selectedLand.FarmerName }}</span>
+                  <span class="slc-dot">·</span>
+                  <span><i class="bi bi-rulers"></i> {{ selectedLand.LandSize }} acres</span>
+                  <span class="slc-dot">·</span>
+                  <span><i class="bi bi-droplet"></i> {{ selectedLand.WaterSource }}</span>
+                </p>
+              </div>
+              <button type="button" class="slc-change-btn" (click)="openLandPicker(); $event.stopPropagation()">
+                <i class="bi bi-pencil-square"></i> Change
+              </button>
+            </div>
+
+            <!-- Choose land button (when nothing selected) -->
+            <button type="button" class="btn-choose-land" *ngIf="!selectedLand"
+              [class.has-error]="projectForm.get('landId')?.touched && !selectedLand" (click)="openLandPicker()">
+              <div class="bcl-icon-wrap">
+                <i class="bi bi-map"></i>
+              </div>
+              <div class="bcl-text">
+                <span class="bcl-main">Choose Land</span>
+                <span class="bcl-sub">Browse and select a registered land parcel</span>
+              </div>
+              <i class="bi bi-chevron-right bcl-chevron"></i>
+            </button>
+
+            <span class="field-error" *ngIf="projectForm.get('landId')?.touched && !selectedLand">
+              <i class="bi bi-exclamation-circle"></i> Please select a land.
+            </span>
+          </div>
+
+
+
+          <!-- Status -->
+          <div class="field-group">
+            <label class="field-label">Status</label>
+            <div class="input-wrap">
+              <i class="bi bi-toggle-on input-icon"></i>
+              <select formControlName="status" class="field-input field-select">
+                <option *ngFor="let s of projectStatuses" [value]="s">{{ s }}</option>
+              </select>
+              <i class="bi bi-chevron-down select-chevron"></i>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="section-divider">
+          <span><i class="bi bi-calendar3"></i> Timeline & Investment</span>
+        </div>
+
+        <div class="form-grid four-col">
+
+          <!-- Start Date -->
+          <div class="field-group" [class.has-error]="isInvalid('startDate')"
+            [class.has-success]="isValid('startDate')">
+            <label class="field-label">Start Date <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="bi bi-calendar-event input-icon"></i>
+              <input type="date" formControlName="startDate" class="field-input" />
+              <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('startDate')"></i>
+            </div>
+            <span class="field-error" *ngIf="isInvalid('startDate')">
+              <i class="bi bi-exclamation-circle"></i> Start date is required.
+            </span>
+          </div>
+
+          <!-- End Date -->
+          <div class="field-group" [class.has-error]="isInvalid('endDate')" [class.has-success]="isValid('endDate')">
+            <label class="field-label">End Date <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="bi bi-calendar-check input-icon"></i>
+              <input type="date" formControlName="endDate" class="field-input" />
+              <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('endDate')"></i>
+            </div>
+            <span class="field-error" *ngIf="isInvalid('endDate')">
+              <i class="bi bi-exclamation-circle"></i> End date is required.
+            </span>
+          </div>
+
+          <!-- Estimated Investment -->
+          <div class="field-group" [class.has-error]="isInvalid('estimatedInvestment')"
+            [class.has-success]="isValid('estimatedInvestment')">
+            <label class="field-label">Est. Investment (₹) <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="bi bi-currency-rupee input-icon"></i>
+              <input type="number" formControlName="estimatedInvestment" class="field-input" placeholder="e.g. 500000"
+                min="1" />
+              <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('estimatedInvestment')"></i>
+            </div>
+            <span class="field-error" *ngIf="isInvalid('estimatedInvestment')">
+              <i class="bi bi-exclamation-circle"></i> Estimated investment is required.
+            </span>
+          </div>
+
+          <!-- Total Plants -->
+          <div class="field-group" [class.has-error]="isInvalid('totalPlants')"
+            [class.has-success]="isValid('totalPlants')">
+            <label class="field-label">Total Plants <span class="req">*</span></label>
+            <div class="input-wrap">
+              <i class="bi bi-tree input-icon"></i>
+              <input type="number" formControlName="totalPlants" class="field-input" placeholder="e.g. 200" min="1" />
+              <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('totalPlants')"></i>
+            </div>
+            <span class="field-error" *ngIf="isInvalid('totalPlants')">
+              <i class="bi bi-exclamation-circle"></i> Total plants is required.
+            </span>
+          </div>
+
+          <!-- Payment Frequency -->
+          <div class="field-group">
+            <label class="field-label">Payment Frequency</label>
+            <div class="input-wrap">
+              <i class="bi bi-arrow-repeat input-icon"></i>
+              <select formControlName="paymentFrequency" class="field-input field-select">
+                <option value="">— Select —</option>
+                <option *ngFor="let f of paymentFrequencies" [value]="f">{{ f }}</option>
+              </select>
+              <i class="bi bi-chevron-down select-chevron"></i>
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+    </div>
+
+    <!-- ════════════════════════════════
+         STEP 2 — Crops
+         ════════════════════════════════ -->
+    <div class="step-pane" *ngIf="currentStep === 2">
+      <div class="step-pane-header">
+        <div class="step-pane-icon amber">
+          <i class="bi bi-flower1"></i>
+        </div>
+        <div>
+          <h2 class="step-pane-title">Crop Configuration</h2>
+          <p class="step-pane-sub">Add one or more crops for this project</p>
+        </div>
+        <div class="step-pane-actions">
+          <button type="button" class="btn-add-row" (click)="addCropRow()">
+            <i class="bi bi-plus-circle"></i> Add Crop
+          </button>
+        </div>
+      </div>
+
+      <!-- Crop table header -->
+      <div class="crop-table-header">
+        <span class="col-crop">Crop <span class="req">*</span></span>
+        <span class="col-plants">Plants <span class="req">*</span></span>
+        <span class="col-cost">Cost/Plant (₹) <span class="req">*</span></span>
+        <span class="col-yield">Est. Yield (kg) <span class="req">*</span></span>
+        <span class="col-harvest">Harvest Date <span class="req">*</span></span>
+        <span class="col-total">Total Cost</span>
+        <span class="col-action"></span>
+      </div>
+
+      <!-- Crop rows -->
+      <div class="crop-rows-wrap">
+        <div class="crop-row" *ngFor="let row of cropRows; let i = index"
+          [class.row-filled]="row.crop && row.plantCount > 0">
+
+          <!-- Crop select -->
+          <div class="crop-cell col-crop">
+            <ng-select [(ngModel)]="row.crop" [items]="(crops$ | async) || []" bindLabel="CropName"
+              [typeahead]="cropInput$" [loading]="cropsLoading" placeholder="Search crop…" [clearable]="true"
+              notFoundText="No crops found" loadingText="Searching…" class="crop-select">
+              <ng-template ng-option-tmp let-item="item">
+                <div class="crop-option">
+                  <span class="crop-opt-emoji">{{ categoryEmoji(item.CategoryKey) }}</span>
+                  <div class="crop-opt-info">
+                    <span class="crop-opt-name">{{ item.CropName }}</span>
+                    <span class="crop-opt-cat">{{ item.CategoryKey }} · {{ item.GrowthDurationDays }}d</span>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                <span class="selected-crop-label">
+                  {{ categoryEmoji(item.CategoryKey) }} {{ item.CropName }}
+                </span>
+              </ng-template>
+            </ng-select>
+          </div>
+
+          <!-- Plant count -->
+          <div class="crop-cell col-plants">
+            <input type="number" [(ngModel)]="row.plantCount" class="table-input" placeholder="0" min="1" />
+          </div>
+
+          <!-- Cost per plant -->
+          <div class="crop-cell col-cost">
+            <div class="input-with-prefix">
+              <span class="tbl-prefix">₹</span>
+              <input type="number" [(ngModel)]="row.costPerPlant" class="table-input prefixed" placeholder="0" min="0"
+                step="0.01" />
+            </div>
+          </div>
+
+          <!-- Estimated yield -->
+          <div class="crop-cell col-yield">
+            <div class="input-with-prefix">
+              <input type="number" [(ngModel)]="row.estimatedYieldKg" class="table-input suffixed" placeholder="0"
+                min="0" step="0.1" />
+              <span class="tbl-suffix">kg</span>
+            </div>
+          </div>
+
+          <!-- Harvest date -->
+          <div class="crop-cell col-harvest">
+            <input type="date" [(ngModel)]="row.expectedHarvestDate" class="table-input" />
+          </div>
+
+          <!-- Total -->
+          <div class="crop-cell col-total">
+            <span class="total-chip">
+              ₹{{ totalEstimatedCost(row) | number:'1.0-0' }}
+            </span>
+          </div>
+
+          <!-- Remove -->
+          <div class="crop-cell col-action">
+            <button type="button" class="btn-remove-row" (click)="removeCropRow(i)" [disabled]="cropRows.length === 1"
+              title="Remove row">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Crop summary bar -->
+      <div class="crop-summary-bar" *ngIf="cropRows.length > 0">
+        <div class="csb-item">
+          <i class="bi bi-layers"></i>
+          <span>{{ cropRows.length }} crop{{ cropRows.length > 1 ? 's' : '' }} added</span>
+        </div>
+        <div class="csb-item amber">
+          <i class="bi bi-currency-rupee"></i>
+          <span>Total: ₹{{ cropRows | sumTotalCost | number:'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════
+         STEP 3 — Investors
+         ════════════════════════════════ -->
+    <div class="step-pane" *ngIf="currentStep === 3">
+      <div class="step-pane-header">
+        <div class="step-pane-icon indigo">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div>
+          <h2 class="step-pane-title">Investor Assignment</h2>
+          <p class="step-pane-sub">Link investors to crops and configure payment terms</p>
+        </div>
+        <div class="step-pane-actions">
+          <button type="button" class="btn-add-row indigo" (click)="addInvestorRow()">
+            <i class="bi bi-plus-circle"></i> Add Investor
+          </button>
+        </div>
+      </div>
+
+      <!-- Investor cards -->
+      <div class="investor-cards-wrap">
+        <div class="investor-card" *ngFor="let row of investorRows; let i = index"
+          [class.card-filled]="row.investor && row.projectCropId">
+
+          <div class="investor-card-header">
+            <span class="investor-card-num">Investor {{ i + 1 }}</span>
+            <button type="button" class="btn-remove-row" (click)="removeInvestorRow(i)"
+              [disabled]="investorRows.length === 1">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+
+          <div class="investor-card-body">
+
+            <div class="inv-form-grid">
+
+              <!-- Investor select -->
+              <div class="inv-field-group span-2">
+                <label class="field-label">Investor <span class="req">*</span></label>
+                <ng-select [(ngModel)]="row.investor" [items]="(investors$ | async) || []" bindLabel="Name"
+                  [typeahead]="investorInput$" [loading]="investorsLoading" placeholder="Search investor by name…"
+                  [clearable]="true" notFoundText="No investors found" loadingText="Searching…" class="farm-select">
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="investor-option">
+                      <div class="inv-opt-avatar">{{ item.Name?.charAt(0) | uppercase }}</div>
+                      <div class="inv-opt-info">
+                        <span class="inv-opt-name">{{ item.Name }}</span>
+                        <span class="inv-opt-sub">{{ item.Email || item.MobileNumber || 'ID: ' + item.InvestorId
+                          }}</span>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-label-tmp let-item="item">
+                    <div class="selected-investor-label">
+                      <div class="inv-sel-avatar">{{ item.Name?.charAt(0) | uppercase }}</div>
+                      <span>{{ item.Name }}</span>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+
+              <!-- Project Crop -->
+              <div class="inv-field-group span-2">
+                <label class="field-label">Crop (Project) <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-flower1 input-icon"></i>
+                  <select [(ngModel)]="row.projectCropId" class="field-input field-select">
+                    <option [ngValue]="null">— Select Crop —</option>
+                    <option *ngFor="let c of projectCropsForSelect" [ngValue]="c.id">{{ c.label }}</option>
+                  </select>
+                  <i class="bi bi-chevron-down select-chevron"></i>
+                </div>
+              </div>
+
+              <!-- Plant Count -->
+              <div class="inv-field-group">
+                <label class="field-label">Plants <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-tree input-icon"></i>
+                  <input type="number" [(ngModel)]="row.plantCount" class="field-input" placeholder="0" min="1" />
+                </div>
+              </div>
+
+              <!-- Amount Invested -->
+              <div class="inv-field-group">
+                <label class="field-label">Amount (₹) <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-currency-rupee input-icon"></i>
+                  <input type="number" [(ngModel)]="row.amountInvested" class="field-input" placeholder="0" min="0"
+                    step="0.01" />
+                </div>
+              </div>
+
+              <!-- Investment Date -->
+              <div class="inv-field-group">
+                <label class="field-label">Investment Date <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-calendar-event input-icon"></i>
+                  <input type="date" [(ngModel)]="row.investmentDate" class="field-input" />
+                </div>
+              </div>
+
+              <!-- Payment Frequency -->
+              <div class="inv-field-group">
+                <label class="field-label">Frequency <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-arrow-repeat input-icon"></i>
+                  <select [(ngModel)]="row.paymentFrequency" class="field-input field-select">
+                    <option *ngFor="let f of investorPaymentFrequencies" [value]="f">{{ f }}</option>
+                  </select>
+                  <i class="bi bi-chevron-down select-chevron"></i>
+                </div>
+              </div>
+
+              <!-- Installment Count -->
+              <div class="inv-field-group">
+                <label class="field-label">Installments <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-list-ol input-icon"></i>
+                  <input type="number" [(ngModel)]="row.installmentCount" class="field-input" placeholder="1" min="1" />
+                </div>
+              </div>
+
+              <!-- Installment Amount -->
+              <div class="inv-field-group">
+                <label class="field-label">Per Installment (₹) <span class="req">*</span></label>
+                <div class="input-wrap">
+                  <i class="bi bi-cash-stack input-icon"></i>
+                  <input type="number" [(ngModel)]="row.installmentAmount" class="field-input" placeholder="0" min="0"
+                    step="0.01" />
+                </div>
+              </div>
+
+              <!-- Status -->
+              <div class="inv-field-group">
+                <label class="field-label">Status</label>
+                <div class="input-wrap">
+                  <i class="bi bi-toggle-on input-icon"></i>
+                  <select [(ngModel)]="row.status" class="field-input field-select">
+                    <option *ngFor="let s of investorStatuses" [value]="s">{{ s }}</option>
+                  </select>
+                  <i class="bi bi-chevron-down select-chevron"></i>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ════════════════════════════════
+         FOOTER ACTIONS
+         ════════════════════════════════ -->
+    <div class="form-footer">
+      <button type="button" class="btn-outline-farm" (click)="prevStep()" *ngIf="currentStep > 1"
+        [disabled]="submitting">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+
+      <div class="footer-spacer"></div>
+
+      <!-- Step summary pill -->
+      <div class="step-summary-pill" *ngIf="currentStep === 2 && projectId">
+        <i class="bi bi-check-circle-fill"></i>
+        Project #{{ projectName }} created
+      </div>
+
+      <button type="button" class="btn-ghost-farm" (click)="resetAll()" *ngIf="currentStep === 1"
+        [disabled]="submitting">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+
+      <button type="button" class="btn-primary-farm" (click)="nextStep()" *ngIf="currentStep < totalSteps"
+        [disabled]="submitting">
+        <span *ngIf="!submitting">
+          Continue <i class="bi bi-arrow-right"></i>
+        </span>
+        <span *ngIf="submitting" class="btn-loading">
+          <i class="bi bi-arrow-repeat spinning"></i> Saving…
+        </span>
+      </button>
+
+      <button type="button" class="btn-primary-farm btn-submit" *ngIf="currentStep === totalSteps"
+        (click)="onFinalSubmit()" [disabled]="submitting">
+        <span *ngIf="!submitting">
+          <i class="bi bi-rocket-takeoff-fill"></i> Launch Project
+        </span>
+        <span *ngIf="submitting" class="btn-loading">
+          <i class="bi bi-arrow-repeat spinning"></i> Submitting…
+        </span>
+      </button>
+    </div>
+
+  </div>
+  <!-- ══════════════════════════════════
+     LAND PICKER MODAL
+     ══════════════════════════════════ -->
+  <div class="land-modal-overlay" *ngIf="landModalOpen" (click)="closeLandPicker()" [@overlayAnim]>
+    <div class="land-modal" (click)="$event.stopPropagation()" [@modalAnim]>
+
+      <!-- Modal header -->
+      <div class="land-modal-header">
+        <div class="lmh-left">
+          <div class="lmh-icon"><i class="bi bi-map-fill"></i></div>
+          <div>
+            <h3 class="lmh-title">Select Land Parcel</h3>
+            <p class="lmh-sub">{{ filteredLands.length }} land{{ filteredLands.length !== 1 ? 's' : '' }} available</p>
+          </div>
+        </div>
+        <button type="button" class="lmh-close" (click)="closeLandPicker()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Search bar -->
+      <div class="land-modal-search">
+        <div class="lms-wrap">
+          <i class="bi bi-search lms-icon"></i>
+          <input type="text" [(ngModel)]="landSearch" (ngModelChange)="onLandSearch($event)" class="lms-input"
+            placeholder="Search by location, farmer, soil type…" autocomplete="off" />
+          <button class="lms-clear" *ngIf="landSearch" (click)="landSearch=''; onLandSearch('')">
+            <i class="bi bi-x"></i>
+          </button>
+          <span class="lms-spinner" *ngIf="landsLoading">
+            <i class="bi bi-arrow-repeat spinning"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Land cards list -->
+      <div class="land-modal-body">
+
+        <!-- Loading skeleton -->
+        <div class="land-skeleton-wrap" *ngIf="landsLoading">
+          <div class="land-card-skeleton" *ngFor="let s of [1,2,3]">
+            <div class="lcs-header">
+              <div class="lcs-icon"></div>
+              <div class="lcs-lines">
+                <div class="lcs-line w60"></div>
+                <div class="lcs-line w40"></div>
+              </div>
+            </div>
+            <div class="lcs-chips">
+              <div class="lcs-chip w30"></div>
+              <div class="lcs-chip w25"></div>
+              <div class="lcs-chip w35"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="land-empty" *ngIf="!landsLoading && filteredLands.length === 0">
+          <i class="bi bi-map"></i>
+          <p>No lands found{{ landSearch ? ' for "' + landSearch + '"' : '' }}</p>
+        </div>
+
+        <!-- Land cards -->
+        <div class="land-cards-grid" *ngIf="!landsLoading && filteredLands.length > 0">
+          <div class="land-card" *ngFor="let land of filteredLands; let i = index"
+            [class.land-card-selected]="selectedLand?.LandId === land.LandId" [style.animation-delay]="(i * 60) + 'ms'"
+            (click)="selectLand(land)">
+
+            <!-- Selection indicator -->
+            <div class="lc-check" *ngIf="selectedLand?.LandId === land.LandId">
+              <i class="bi bi-check-lg"></i>
+            </div>
+
+            <!-- Card header -->
+            <div class="lc-header">
+              <div class="lc-avatar">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div class="lc-header-info">
+                <p class="lc-location">{{ land.LandLocation }}</p>
+                <p class="lc-farmer"><i class="bi bi-person-fill"></i> {{ land.FarmerName }}</p>
+              </div>
+              <!-- Map button -->
+              <button type="button" class="lc-map-btn" *ngIf="land.Latitude && land.Longitude"
+                (click)="openInMaps(land, $event)" (mousedown)="$event.stopPropagation()" title="View on Google Maps">
+                <i class="bi bi-pin-map-fill"></i>
+                <span>Map</span>
+              </button>
+              <span class="lc-no-map" *ngIf="!land.Latitude || !land.Longitude" title="No coordinates available">
+                <i class="bi bi-pin-map"></i>
+              </span>
+            </div>
+
+            <!-- Info chips -->
+            <div class="lc-chips">
+              <span class="lc-chip soil">
+                <i class="bi bi-layers-fill"></i> {{ land.SoilType }}
+              </span>
+              <span class="lc-chip water">
+                <i class="bi bi-droplet-fill"></i> {{ land.WaterSource }}
+              </span>
+              <span class="lc-chip size">
+                <i class="bi bi-rulers"></i> {{ land.LandSize }} ac
+              </span>
+            </div>
+
+            <!-- Coordinates row -->
+            <div class="lc-coords" *ngIf="land.Latitude && land.Longitude">
+              <i class="bi bi-crosshair"></i>
+              {{ land.Latitude | number:'1.4-4' }}, {{ land.Longitude | number:'1.4-4' }}
+            </div>
+            <div class="lc-coords lc-coords-missing" *ngIf="!land.Latitude || !land.Longitude">
+              <i class="bi bi-exclamation-circle"></i> No GPS coordinates
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="land-modal-footer">
+        <button type="button" class="btn-outline-farm" (click)="closeLandPicker()">
+          Cancel
+        </button>
+        <button type="button" class="btn-primary-farm" [disabled]="!selectedLand" (click)="confirmLandSelection()">
+          <i class="bi bi-check-circle-fill"></i>
+          Confirm Selection
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

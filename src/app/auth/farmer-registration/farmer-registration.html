@@ -1,0 +1,377 @@
+<div class="auth-shell">
+
+    <!-- ═══════════════════════════════════════════════════
+       LEFT HERO PANEL
+  ════════════════════════════════════════════════════ -->
+    <div class="hero-panel">
+        <div class="hero-bg-pattern"></div>
+
+        <div class="hero-content">
+            <div class="logo-lockup">
+                <div class="logo-mark">🌿</div>
+                <span class="brand">G1Farm</span>
+            </div>
+
+            <h1 class="hero-headline">Grow smarter,<br>harvest better.</h1>
+
+            <p class="tagline">
+                Join thousands of farmers who manage their land, crops,
+                and contracts — all in one place.
+            </p>
+
+
+        </div>
+
+        <div class="hero-footer">Trusted by Indian farmers since 2020</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+       RIGHT FORM PANEL
+  ════════════════════════════════════════════════════ -->
+    <div class="form-panel">
+        <div class="form-card">
+
+            <!-- Mobile logo (hidden on desktop) -->
+            <div class="mobile-logo">
+                <span class="mobile-logo-icon">🌿</span>
+                <span class="mobile-logo-text">G1Farm</span>
+            </div>
+
+            <!-- ── Step indicator ───────────────────────────── -->
+            <div class="step-indicator">
+
+                <div class="step" [class.active]="!showAdditionalForm()" [class.done]="showAdditionalForm()">
+                    <div class="step-circle">
+                        @if (showAdditionalForm()) {
+                        <i class="fa-solid fa-check"></i>
+                        } @else {
+                        1
+                        }
+                    </div>
+                    <span class="step-label">Basic Info</span>
+                </div>
+
+                <div class="step-line" [class.done]="showAdditionalForm()"></div>
+
+                <div class="step" [class.active]="showAdditionalForm()">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Land Details</span>
+                </div>
+
+            </div>
+
+            <!-- ── Header text ──────────────────────────────── -->
+            <div class="header-text">
+                @if (!showAdditionalForm()) {
+                <h2>Basic Registration</h2>
+                <p>Enter farmer details to get started</p>
+                } @else {
+                <h2>Land Information</h2>
+                <p>Add your farm and land details</p>
+                }
+            </div>
+
+            <!-- ── Form ─────────────────────────────────────── -->
+            <form [formGroup]="farmerForm" (ngSubmit)="submitForm()" novalidate>
+
+                <!-- ════════════════════════════════════
+             STEP 1 — BASIC DETAILS
+        ═════════════════════════════════════ -->
+                @if (!showAdditionalForm()) {
+                <div class="form-section">
+
+                    <div class="fields-row two-col">
+
+                        <!-- Name -->
+                        <div class="field">
+                            <label for="name">Farmer Name <span class="req">*</span></label>
+                            <div class="input-wrap" [class.error]="f['name'].invalid && f['name'].touched">
+                                <span class="input-icon"><i class="fa-solid fa-user"></i></span>
+                                <input id="name" type="text" formControlName="name" placeholder="Full name"
+                                    autocomplete="name" />
+                            </div>
+                            @if (f['name'].invalid && f['name'].touched) {
+                            <span class="field-error">
+                                @if (f['name'].errors?.['required']) { Name is required. }
+                                @if (f['name'].errors?.['minlength']) { Minimum 2 characters. }
+                            </span>
+                            }
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="field">
+                            <label for="phoneNumber">Phone Number <span class="req">*</span></label>
+                            <div class="input-wrap"
+                                [class.error]="f['phoneNumber'].invalid && f['phoneNumber'].touched">
+                                <span class="input-icon"><i class="fa-solid fa-mobile-screen-button"></i></span>
+                                <input id="phoneNumber" type="tel" formControlName="phoneNumber" maxlength="10"
+                                    placeholder="10-digit mobile" autocomplete="tel" />
+                            </div>
+                            @if (f['phoneNumber'].invalid && f['phoneNumber'].touched) {
+                            <span class="field-error">
+                                @if (f['phoneNumber'].errors?.['required']) { Phone is required. }
+                                @if (f['phoneNumber'].errors?.['pattern']) { Enter a valid 10-digit mobile number. }
+                            </span>
+                            }
+                        </div>
+
+                    </div>
+
+                    <!-- Location section divider -->
+                    <div class="section-divider"><span>Location Details</span></div>
+
+                    <div class="fields-row three-col">
+
+                        <!-- Village -->
+                        <div class="field">
+                            <label for="village">Village</label>
+                            <div class="input-wrap">
+                                <span class="input-icon"><i class="fa-solid fa-house"></i></span>
+                                <input id="village" type="text" formControlName="village" placeholder="Village name" />
+                            </div>
+                        </div>
+
+                        <!-- State -->
+                        <div class="field">
+                            <label for="stateId">State <span class="req">*</span></label>
+                            <div class="input-wrap select-wrap"
+                                [class.error]="f['stateId'].invalid && f['stateId'].touched">
+                                <span class="input-icon"><i class="fa-solid fa-map"></i></span>
+                                <select id="stateId" formControlName="stateId" (change)="onStateChange()">
+                                    <option value="">Select State</option>
+                                    @for (s of states; track s.stateId) {
+                                    <option [value]="s.stateId">{{ s.stateName }}</option>
+                                    }
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+                            </div>
+                            @if (f['stateId'].invalid && f['stateId'].touched) {
+                            <span class="field-error">Please select a state.</span>
+                            }
+                        </div>
+
+                        <!-- District -->
+                        <div class="field">
+                            <label for="districtId">District <span class="req">*</span></label>
+                            <div class="input-wrap select-wrap"
+                                [class.error]="f['districtId'].invalid && f['districtId'].touched">
+                                <span class="input-icon"><i class="fa-solid fa-location-dot"></i></span>
+                                <select id="districtId" formControlName="districtId" (change)="onDistrictChange()"
+                                    [attr.disabled]="!districts.length ? true : null">
+                                    <option value="">Select District</option>
+                                    @for (d of districts; track d.districtId) {
+                                    <option [value]="d.districtId">{{ d.districtName }}</option>
+                                    }
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+                            </div>
+                            @if (f['districtId'].invalid && f['districtId'].touched) {
+                            <span class="field-error">Please select a district.</span>
+                            }
+                        </div>
+                        <div class="field">
+                            <label for="hobliId">Hobli <span class="req">*</span></label>
+                            <div class="input-wrap select-wrap"
+                                [class.error]="f['hobliId'].invalid && f['hobliId'].touched">
+                                <span class="input-icon"><i class="fa-solid fa-location-dot"></i></span>
+                                <select id="hobliId" formControlName="hobliId"
+                                    [attr.disabled]="!districts.length ? true : null">
+                                    <option value="">Select Hobli</option>
+                                    @for (h of hoblis; track h.hobliId) {
+                                    <option [value]="h.hobliId">{{ h.hobliName }}</option>
+                                    }
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+                            </div>
+                            @if (f['hobliId'].invalid && f['hobliId'].touched) {
+                            <span class="field-error">Please select a Hobli.</span>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+                }
+
+                <!-- ════════════════════════════════════
+             STEP 2 — LAND DETAILS
+        ═════════════════════════════════════ -->
+                @if (showAdditionalForm()) {
+                <div class="form-section">
+
+                    <div class="fields-row two-col">
+
+                        <!-- Land Location -->
+                        <div class="field">
+                            <label for="landLocation">Land Location</label>
+                            <div class="input-wrap">
+                                <span class="input-icon"><i class="fa-solid fa-map-pin"></i></span>
+                                <input id="landLocation" type="text" formControlName="landLocation"
+                                    placeholder="Land location" />
+                            </div>
+                        </div>
+
+
+                        <!-- Soil Type -->
+                        <div class="field">
+                            <label for="soilType">Soil Type</label>
+                            <div class="input-wrap">
+                                <span class="input-icon"><i class="fa-solid fa-layer-group"></i></span>
+                                <input id="soilType" type="text" formControlName="soilType"
+                                    placeholder="e.g. Black, Red" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="fields-row two-col">
+
+                        <!-- Land Size -->
+                        <div class="field">
+                            <label for="landSize">Land Size</label>
+                            <div class="input-wrap">
+                                <span class="input-icon"><i class="fa-solid fa-ruler-combined"></i></span>
+                                <input id="landSize" type="number" formControlName="landSize"
+                                    placeholder="Enter land size" />
+                            </div>
+                        </div>
+
+                        <!-- Land UOM Dropdown -->
+                        <div class="field">
+                            <label for="landUOM">Unit</label>
+
+                            <div class="input-wrap select-wrap">
+
+                                <span class="input-icon">
+                                    <i class="fa-solid fa-scale-balanced"></i>
+                                </span>
+
+                                <select id="landUOM" formControlName="LandUOMId">
+
+                                    <option value="">
+                                        Select Unit
+                                    </option>
+
+                                    @for (u of landUoms; track u.uomId) {
+
+                                    <option [value]="u.uomId">
+
+                                        {{ u.uomName }}
+
+                                    </option>
+
+                                    }
+
+                                </select>
+
+                                <i class="fa-solid fa-chevron-down select-arrow"></i>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="fields-row one-col">
+
+                        <!-- Water Source -->
+                        <div class="field">
+                            <label for="waterSource">Water Source</label>
+                            <div class="input-wrap">
+                                <span class="input-icon"><i class="fa-solid fa-droplet"></i></span>
+                                <input id="waterSource" type="text" formControlName="waterSource"
+                                    placeholder="e.g. Borewell, Canal" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- GPS Card -->
+                    <div class="gps-card">
+
+                        <div class="gps-header">
+                            <div class="gps-icon-wrap">
+                                <i class="fa-solid fa-location-crosshairs"></i>
+                            </div>
+                            <div>
+                                <div class="gps-title">Auto-detect Farm Location</div>
+                                <div class="gps-sub">Tap below to capture GPS coordinates</div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-detect" [class.detected]="gpsDetected()"
+                            [disabled]="isDetectingGps()" (click)="getCurrentLocation()">
+                            @if (isDetectingGps()) {
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            Detecting...
+                            } @else if (gpsDetected()) {
+                            <i class="fa-solid fa-circle-check"></i>
+                            Location Detected
+                            } @else {
+                            <i class="fa-solid fa-location-dot"></i>
+                            Detect My Location
+                            }
+                        </button>
+
+                        <div class="coords-row">
+
+                            <div class="field">
+                                <label for="latitude">Latitude</label>
+                                <div class="input-wrap coord-input">
+                                    <span class="input-icon"><i class="fa-solid fa-arrows-up-down"></i></span>
+                                    <input id="latitude" type="text" formControlName="latitude" placeholder="—" />
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="longitude">Longitude</label>
+                                <div class="input-wrap coord-input">
+                                    <span class="input-icon"><i class="fa-solid fa-arrows-left-right"></i></span>
+                                    <input id="longitude" type="text" formControlName="longitude" placeholder="—" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                }
+
+                <!-- ── Submit button ──────────────────────────── -->
+                <button type="submit" class="btn-primary" [disabled]="isSubmitting()">
+                    @if (isSubmitting()) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    Processing...
+                    } @else if (!showAdditionalForm()) {
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Register &amp; Send OTP
+                    } @else {
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Land Details
+                    }
+                </button>
+
+                @if (!showAdditionalForm()) {
+                <div class="auth-footer">
+
+                    <p class="form-note">
+                        By registering you agree to our
+                        <a href="#">Terms of Service</a>
+                    </p>
+
+                    <div class="already-account">
+                        <span>Already registered?</span>
+
+                        <button type="button" class="btn-login-link" routerLink="/auth/farmer-login">
+                            Login
+                        </button>
+                    </div>
+
+                </div>
+                }
+
+            </form>
+
+        </div>
+    </div>
+
+
+</div>

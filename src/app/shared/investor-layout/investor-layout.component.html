@@ -1,0 +1,21 @@
+<div class="dashboard-root" [class.sidebar-collapsed]="sidebarCollapsed">
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" *ngIf="mobileSidebarOpen" (click)="closeSidebar()"></div>
+
+    <!-- Sidebar -->
+    <app-sidebar [collapsed]="sidebarCollapsed" [mobileOpen]="mobileSidebarOpen" [investor]="investor"
+        (toggleCollapse)="toggleSidebar()" (logout)="logout()">
+    </app-sidebar>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <app-header [investor]="investor" [sidebarCollapsed]="sidebarCollapsed" (toggleSidebar)="toggleSidebar()">
+        </app-header>
+
+        <div class="page-body">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+
+</div>

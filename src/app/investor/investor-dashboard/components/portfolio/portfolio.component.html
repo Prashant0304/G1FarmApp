@@ -1,0 +1,80 @@
+<div class="tab-content">
+
+    <!-- Filters -->
+    <div class="portfolio-controls">
+
+        <div class="filter-tabs">
+            <button *ngFor="let f of ['All','Active','Completed','Planning']" class="filter-btn"
+                [class.active]="selectedProjectFilter === f" (click)="selectedProjectFilter = f">{{ f }}</button>
+        </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="portfolio-grid">
+        <div class="portfolio-card" *ngFor="let inv of filteredInvestments; trackBy: trackByInvestorId">
+            <div class="pcard-header">
+                <div class="pcard-meta">
+                    <span class="pcard-code">{{ inv.project.projectCode }}</span>
+                    <span class="status-badge" [ngClass]="getStatusClass(inv.status)">{{ inv.status }}</span>
+                </div>
+                <h3 class="pcard-name">{{ inv.project.projectName }}</h3>
+                <span class="pcard-crop">{{ inv.cropKey }}</span>
+            </div>
+
+            <div class="pcard-financials">
+                <div class="fin-item">
+                    <span class="fin-label">Invested</span>
+                    <span class="fin-val">{{ formatCurrency(inv.amountInvested) }}</span>
+                </div>
+                <div class="fin-divider"></div>
+                <div class="fin-item">
+                    <span class="fin-label">Expected Return</span>
+                    <span class="fin-val highlight">{{ formatCurrency(inv.expectedReturn) }}</span>
+                </div>
+                <div class="fin-divider"></div>
+                <div class="fin-item">
+                    <span class="fin-label">ROI</span>
+                    <span class="fin-val positive">+{{ inv.returnPercentage }}%</span>
+                </div>
+            </div>
+
+            <!-- Project Progress -->
+            <div class="pcard-progress">
+                <div class="prog-row">
+                    <span class="prog-label">Project Progress</span>
+                    <span class="prog-pct">{{ getProjectProgress(inv) }}%</span>
+                </div>
+                <div class="prog-bar">
+                    <div class="prog-fill" [style.width.%]="getProjectProgress(inv)"></div>
+                </div>
+                <div class="prog-dates">
+                    <span>{{ formatDate(inv.project.startDate) }}</span>
+                    <span>{{ getDaysRemaining(inv.project.endDate) }} days left</span>
+                </div>
+            </div>
+
+            <!-- Installments -->
+            <div class="pcard-installments">
+                <div class="prog-row">
+                    <span class="prog-label">Installments</span>
+                    <span class="prog-pct">{{ inv.paidInstallments }}/{{ inv.installmentCount }}</span>
+                </div>
+                <div class="prog-bar">
+                    <div class="prog-fill amber" [style.width.%]="getInstallmentProgress(inv)"></div>
+                </div>
+            </div>
+
+            <div class="pcard-footer">
+                <span class="pcard-location">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                            fill="currentColor" />
+                    </svg>
+                    {{ inv.project.location }}
+                </span>
+                <span class="pcard-freq">{{ inv.paymentFrequency }}</span>
+            </div>
+        </div>
+    </div>
+
+</div>

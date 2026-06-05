@@ -1,0 +1,327 @@
+<!-- src/app/pages/admin/dashboard/dashboard.component.html -->
+<div class="dashboard">
+
+  <!-- ══════ GREETING BAR ══════ -->
+  <div class="greeting-bar">
+    <div class="greeting-left">
+      <div class="greeting-season">{{ greetingText }}</div>
+      <h1 class="greeting-title">Farm Operations <span>Overview</span></h1>
+      <p class="greeting-sub">{{ today | date:'EEEE, MMMM d, yyyy' }}</p>
+    </div>
+    <div class="greeting-right">
+      <button class="btn-refresh" (click)="loadAll()" [class.spinning]="isRefreshing">
+        <i class="bi bi-arrow-clockwise"></i>
+        <span>Refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════ KPI CARDS ROW ══════ -->
+  <div class="kpi-grid">
+
+    <div class="kpi-card" [class.loaded]="!isLoading">
+      <div class="kpi-icon-wrap green">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Total Farmers</div>
+        <div class="kpi-value">{{ stats.totalFarmers | number }}</div>
+        <div class="kpi-trend up">
+          <i class="bi bi-arrow-up-right"></i> Active registrations
+        </div>
+      </div>
+      <div class="kpi-bg-icon"><i class="bi bi-people"></i></div>
+    </div>
+
+    <div class="kpi-card amber" [class.loaded]="!isLoading">
+      <div class="kpi-icon-wrap amber">
+        <i class="bi bi-file-earmark-text-fill"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Active Contracts</div>
+        <div class="kpi-value">{{ stats.activeContracts | number }}</div>
+        <div class="kpi-trend neutral">
+          <i class="bi bi-circle-fill"></i> Ongoing season
+        </div>
+      </div>
+      <div class="kpi-bg-icon"><i class="bi bi-file-earmark-text"></i></div>
+    </div>
+
+    <div class="kpi-card teal" [class.loaded]="!isLoading">
+      <div class="kpi-icon-wrap teal">
+        <i class="bi bi-flower1"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Crop Varieties</div>
+        <div class="kpi-value">{{ stats.totalCrops | number }}</div>
+        <div class="kpi-trend up">
+          <i class="bi bi-arrow-up-right"></i> Registered crops
+        </div>
+      </div>
+      <div class="kpi-bg-icon"><i class="bi bi-flower2"></i></div>
+    </div>
+
+    <div class="kpi-card rose" [class.loaded]="!isLoading">
+      <div class="kpi-icon-wrap rose">
+        <i class="bi bi-basket2-fill"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Total Harvests</div>
+        <div class="kpi-value">{{ stats.totalHarvests | number }}</div>
+        <div class="kpi-trend up">
+          <i class="bi bi-arrow-up-right"></i> This season
+        </div>
+      </div>
+      <div class="kpi-bg-icon"><i class="bi bi-basket2"></i></div>
+    </div>
+
+    <div class="kpi-card indigo" [class.loaded]="!isLoading">
+      <div class="kpi-icon-wrap indigo">
+        <i class="bi bi-cash-stack"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Total Payments</div>
+        <div class="kpi-value">₹{{ formatAmount(stats.totalPayments) }}</div>
+        <div class="kpi-trend up">
+          <i class="bi bi-arrow-up-right"></i> Disbursed
+        </div>
+      </div>
+      <div class="kpi-bg-icon"><i class="bi bi-currency-rupee"></i></div>
+    </div>
+
+    <div class="kpi-card earth" [class.loaded]="!isLoading">
+      <div class="kpi-icon-wrap earth">
+        <i class="bi bi-map-fill"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Total Lands</div>
+        <div class="kpi-value">{{ stats.totalLands | number }}</div>
+        <div class="kpi-trend neutral">
+          <i class="bi bi-circle-fill"></i> Registered plots
+        </div>
+      </div>
+      <div class="kpi-bg-icon"><i class="bi bi-map"></i></div>
+    </div>
+
+  </div>
+
+  <!-- ══════ MAIN CONTENT GRID ══════ -->
+  <div class="content-grid">
+
+    <!-- ── Recent Contracts ── -->
+    <div class="panel panel-wide">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-file-earmark-check"></i>
+          Recent Contracts
+        </div>
+        <a class="panel-link" routerLink="/admin/contracts">View all <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      @if (isLoading) {
+        <div class="table-skeleton">
+          @for (s of [1,2,3,4]; track s) {
+            <div class="ts-row">
+              <div class="ts-cell w40"></div>
+              <div class="ts-cell w25"></div>
+              <div class="ts-cell w20"></div>
+              <div class="ts-cell w15"></div>
+            </div>
+          }
+        </div>
+      } @else if (recentContracts.length === 0) {
+        <div class="panel-empty">
+          <i class="bi bi-file-earmark-x"></i>
+          <p>No contracts yet</p>
+        </div>
+      } @else {
+        <div class="contracts-table">
+          <div class="ct-header">
+            <span>Farmer</span>
+            <span>Crop</span>
+            <span>Rate</span>
+            <span>Status</span>
+          </div>
+          @for (c of recentContracts; track c.ContractId; let i = $index) {
+            <div class="ct-row" [style.animation-delay]="(i * 0.06) + 's'">
+              <div class="ct-farmer">
+                <div class="ct-avatar">{{ c.FarmerName?.charAt(0) }}</div>
+                <span>{{ c.FarmerName }}</span>
+              </div>
+              <div class="ct-crop">
+                <span class="crop-dot"></span>
+                {{ c.CropName }}
+              </div>
+              <div class="ct-rate">₹{{ c.AgreedRatePerKg }}/kg</div>
+              <div class="ct-status">
+                <span class="status-badge"
+                  [ngClass]="{
+                    'status-active':   c.Status === 'Active',
+                    'status-pending':  !c.Status || c.Status === 'Pending',
+                    'status-expired':  c.Status === 'Expired'
+                  }">
+                  {{ c.Status || 'Pending' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Activity Feed ── -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-activity"></i>
+          Recent Activity
+        </div>
+        <span class="live-badge"><span class="live-dot"></span>Live</span>
+      </div>
+
+      @if (isLoading) {
+        <div class="activity-skeleton">
+          @for (s of [1,2,3,4,5]; track s) {
+            <div class="as-row">
+              <div class="as-dot"></div>
+              <div class="as-lines">
+                <div class="ts-cell w60"></div>
+                <div class="ts-cell w35"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="activity-feed">
+          @for (a of activityFeed; track a.id; let i = $index) {
+            <div class="activity-item" [style.animation-delay]="(i * 0.07) + 's'">
+              <div class="activity-dot" [ngClass]="a.color"></div>
+              <div class="activity-body">
+                <div class="activity-text">{{ a.text }}</div>
+                <div class="activity-time">
+                  <i class="bi bi-clock"></i> {{ a.time }}
+                </div>
+              </div>
+              <div class="activity-icon" [ngClass]="a.color">
+                <i [class]="a.icon"></i>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Crop Distribution ── -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-pie-chart"></i>
+          Crop Distribution
+        </div>
+      </div>
+
+      <div class="crop-dist-list">
+        @for (crop of cropDistribution; track crop.name; let i = $index) {
+          <div class="crop-dist-item" [style.animation-delay]="(i * 0.08) + 's'">
+            <div class="cd-left">
+              <span class="cd-emoji">{{ crop.emoji }}</span>
+              <span class="cd-name">{{ crop.name }}</span>
+            </div>
+            <div class="cd-bar-wrap">
+              <div class="cd-bar" [style.width]="crop.pct + '%'" [style.background]="crop.color"></div>
+            </div>
+            <div class="cd-pct">{{ crop.pct }}%</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ── Farmer Updates ── -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-chat-square-text"></i>
+          Farmer Updates
+        </div>
+        <span class="update-count-badge">{{ stats.pendingUpdates }}</span>
+      </div>
+
+      @if (isLoading) {
+        <div class="activity-skeleton">
+          @for (s of [1,2,3]; track s) {
+            <div class="as-row">
+              <div class="as-dot"></div>
+              <div class="as-lines">
+                <div class="ts-cell w70"></div>
+                <div class="ts-cell w45"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (farmerUpdates.length === 0) {
+        <div class="panel-empty">
+          <i class="bi bi-inbox"></i>
+          <p>No pending updates</p>
+        </div>
+      } @else {
+        <div class="updates-list">
+          @for (u of farmerUpdates; track u.UpdateId; let i = $index) {
+            <div class="update-item" [style.animation-delay]="(i * 0.07) + 's'">
+              <div class="update-avatar">{{ u.FarmerName?.charAt(0) }}</div>
+              <div class="update-body">
+                <div class="update-farmer">{{ u.FarmerName }}</div>
+                <div class="update-stage">
+                  <i class="bi bi-diagram-3"></i> {{ u.StageKey }}
+                </div>
+                <div class="update-note">{{ u.Notes }}</div>
+              </div>
+              <div class="update-meta">
+                <span class="update-date">{{ u.UpdatedDate | date:'MMM d' }}</span>
+                <span class="update-status-dot"></span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Quick Actions ── -->
+    <div class="panel panel-actions">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="bi bi-lightning-charge"></i>
+          Quick Actions
+        </div>
+      </div>
+
+      <div class="quick-actions-grid">
+        <a class="qa-card green" routerLink="/admin/farmers">
+          <div class="qa-icon"><i class="bi bi-person-plus"></i></div>
+          <div class="qa-label">Add Farmer</div>
+        </a>
+        <a class="qa-card amber" routerLink="/admin/add-contract">
+          <div class="qa-icon"><i class="bi bi-file-earmark-plus"></i></div>
+          <div class="qa-label">New Contract</div>
+        </a>
+        <a class="qa-card teal" routerLink="/admin/crops">
+          <div class="qa-icon"><i class="bi bi-flower1"></i></div>
+          <div class="qa-label">Add Crop</div>
+        </a>
+        <a class="qa-card rose" routerLink="/admin/harvests">
+          <div class="qa-icon"><i class="bi bi-basket2"></i></div>
+          <div class="qa-label">Log Harvest</div>
+        </a>
+        <a class="qa-card indigo" routerLink="/admin/reports">
+          <div class="qa-icon"><i class="bi bi-bar-chart-line"></i></div>
+          <div class="qa-label">View Reports</div>
+        </a>
+        <a class="qa-card earth" routerLink="/admin/lands">
+          <div class="qa-icon"><i class="bi bi-map"></i></div>
+          <div class="qa-label">Manage Lands</div>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /content-grid -->
+
+</div>

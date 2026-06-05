@@ -1,0 +1,265 @@
+/* ========================================================
+   INVESTOR LAYOUT – Shell (sidebar + header + router-outlet)
+   ======================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap");
+
+:host {
+  /* ── Palette ── */
+  --green-50: #eaf3de;
+  --green-100: #c0dd97;
+  --green-200: #97c459;
+  --green-400: #639922;
+  --green-600: #3b6d11;
+  --green-800: #27500a;
+  --green-900: #173404;
+
+  --amber-200: #ef9f27;
+  --amber-400: #ba7517;
+
+  --teal-200: #5dcaa5;
+  --teal-600: #0f6e56;
+
+  --gray-50: #f8f7f2;
+  --gray-100: #eeede6;
+  --gray-200: #d3d1c7;
+  --gray-400: #888780;
+  --gray-600: #5f5e5a;
+  --gray-900: #1c1c1a;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f7f2;
+  --bg-tertiary: #f0efe8;
+
+  --sidebar-w: 240px;
+  --sidebar-w-col: 68px;
+  --topbar-h: 64px;
+
+  --shadow-sm: 0 1px 3px rgba(39, 80, 10, 0.08);
+  --shadow-md: 0 4px 16px rgba(39, 80, 10, 0.1);
+  --shadow-lg: 0 8px 32px rgba(39, 80, 10, 0.14);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    sans-serif;
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+ul {
+  list-style: none;
+}
+
+/* ── Layout Shell ── */
+.dashboard-root {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: grid-template-columns 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dashboard-root.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-w-col) 1fr;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Sidebar Overlay (mobile) ── */
+.sidebar-overlay {
+  display: none;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gray-200);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .dashboard-root {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+  }
+} /* ========================================================
+   INVESTOR LAYOUT – Shell (sidebar + header + router-outlet)
+   ======================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap");
+
+:host {
+  /* ── Palette ── */
+  --green-50: #eaf3de;
+  --green-100: #c0dd97;
+  --green-200: #97c459;
+  --green-400: #639922;
+  --green-600: #3b6d11;
+  --green-800: #27500a;
+  --green-900: #173404;
+
+  --amber-200: #ef9f27;
+  --amber-400: #ba7517;
+
+  --teal-200: #5dcaa5;
+  --teal-600: #0f6e56;
+
+  --gray-50: #f8f7f2;
+  --gray-100: #eeede6;
+  --gray-200: #d3d1c7;
+  --gray-400: #888780;
+  --gray-600: #5f5e5a;
+  --gray-900: #1c1c1a;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f7f2;
+  --bg-tertiary: #f0efe8;
+
+  --sidebar-w: 240px;
+  --sidebar-w-col: 68px;
+  --topbar-h: 64px;
+
+  --shadow-sm: 0 1px 3px rgba(39, 80, 10, 0.08);
+  --shadow-md: 0 4px 16px rgba(39, 80, 10, 0.1);
+  --shadow-lg: 0 8px 32px rgba(39, 80, 10, 0.14);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    sans-serif;
+}
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+ul {
+  list-style: none;
+}
+
+/* ── Layout Shell ── */
+.dashboard-root {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: grid-template-columns 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dashboard-root.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-w-col) 1fr;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Sidebar Overlay (mobile) ── */
+.sidebar-overlay {
+  display: none;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gray-200);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .dashboard-root {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+  }
+}

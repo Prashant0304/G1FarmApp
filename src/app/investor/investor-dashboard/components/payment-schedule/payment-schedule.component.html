@@ -1,0 +1,48 @@
+<div class="tab-content">
+    <div class="table-card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Payment Schedule</h2>
+                <p class="card-subtitle">All project installment records</p>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Crop</th>
+                        <th>Frequency</th>
+                        <th>Installment Amt</th>
+                        <th>Paid</th>
+                        <th>Remaining</th>
+                        <th>Total Paid</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of paymentSchedules">
+                        <td>{{ item.projectName }}</td>
+                        <td>{{ item.cropName }}</td>
+                        <td>{{ item.frequencyName }}</td>
+                        <td>₹{{ item.installmentAmount | number }}</td>
+                        <td>₹{{ item.paidAmount | number }}</td>
+                        <td>₹{{ item.remainingAmount | number }}</td>
+                        <td>₹{{ item.totalPaid | number }}</td>
+                        <td>
+                            <span class="status" [ngClass]="item.status?.toLowerCase()">{{ item.status }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-footer-row">
+                        <td colspan="6"><strong>Total Paid</strong></td>
+                        <td class="amount-cell total-cell"><strong>₹{{ totalPaid | number }}</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

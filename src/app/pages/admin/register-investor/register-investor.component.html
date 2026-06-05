@@ -1,0 +1,423 @@
+<div class="register-investor">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <p class="page-header-breadcrumb">
+                <i class="bi bi-people-fill"></i> Investors
+                <i class="bi bi-chevron-right"></i> Register New
+            </p>
+            <h1 class="page-header-title">
+                Register <span class="title-accent">Investor</span>
+            </h1>
+            <p class="page-header-sub">Complete all three steps to onboard a new investor.</p>
+        </div>
+    </div>
+
+    <!-- Step Progress Bar -->
+    <div class="step-progress-bar">
+        <div class="step-track">
+            <div class="step-fill" [style.width]="((currentStep - 1) / (totalSteps - 1) * 100) + '%'"></div>
+        </div>
+        <div class="step-nodes">
+            <div *ngFor="let s of [1,2,3]" class="step-node" [class.active]="currentStep === s"
+                [class.done]="currentStep > s">
+                <div class="step-circle">
+                    <i *ngIf="currentStep > s" class="bi bi-check-lg"></i>
+                    <span *ngIf="currentStep <= s">{{ s }}</span>
+                </div>
+                <span class="step-label">{{ ['Personal Info','KYC Documents','Bank Details'][s-1] }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-card">
+
+            <!-- ═══════════════════════════
+           STEP 1 — Personal Info
+           ═══════════════════════════ -->
+            <div class="step-pane" *ngIf="currentStep === 1">
+                <div class="step-pane-header">
+                    <div class="step-pane-icon green">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div>
+                        <h2 class="step-pane-title">Personal Information</h2>
+                        <p class="step-pane-sub">Basic details of the investor</p>
+                    </div>
+                </div>
+
+                <div class="form-grid two-col">
+
+                    <!-- Name -->
+                    <div class="field-group" [class.has-error]="isInvalid('name')"
+                        [class.has-success]="isValid('name')">
+                        <label class="field-label">Full Name <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-person input-icon"></i>
+                            <input type="text" formControlName="name" class="field-input"
+                                placeholder="e.g. Ramesh Kumar" autocomplete="off" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('name')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('name')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('name')?.errors?.['required']">Name is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('name')?.errors?.['minlength']">Minimum 2
+                                characters.</ng-container>
+                        </span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="field-group" [class.has-error]="isInvalid('email')"
+                        [class.has-success]="isValid('email')">
+                        <label class="field-label">Email Address <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-envelope input-icon"></i>
+                            <input type="email" formControlName="email" class="field-input"
+                                placeholder="investor@example.com" autocomplete="off" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('email')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('email')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('email')?.errors?.['required']">Email is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('email')?.errors?.['email']">Enter a valid email
+                                address.</ng-container>
+                        </span>
+                    </div>
+
+                    <!-- Mobile -->
+                    <div class="field-group" [class.has-error]="isInvalid('mobileNumber')"
+                        [class.has-success]="isValid('mobileNumber')">
+                        <label class="field-label">Mobile Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-phone input-icon"></i>
+                            <span class="input-prefix">+91</span>
+                            <input type="tel" formControlName="mobileNumber" class="field-input with-prefix"
+                                placeholder="9876543210" maxlength="10" autocomplete="off" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('mobileNumber')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('mobileNumber')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('mobileNumber')?.errors?.['required']">Mobile number is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('mobileNumber')?.errors?.['pattern']">Enter a valid 10-digit
+                                Indian mobile number.</ng-container>
+                        </span>
+                    </div>
+
+                    <!-- Age -->
+                    <div class="field-group" [class.has-error]="isInvalid('age')" [class.has-success]="isValid('age')">
+                        <label class="field-label">Age <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-calendar3 input-icon"></i>
+                            <input type="number" formControlName="age" class="field-input" placeholder="e.g. 35"
+                                min="18" max="100" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('age')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('age')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('age')?.errors?.['required']">Age is required.</ng-container>
+                            <ng-container *ngIf="form.get('age')?.errors?.['min']">Investor must be at least 18 years
+                                old.</ng-container>
+                            <ng-container *ngIf="form.get('age')?.errors?.['max']">Age cannot exceed 100.</ng-container>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════
+           STEP 2 — KYC Documents
+           ═══════════════════════════ -->
+            <div class="step-pane" *ngIf="currentStep === 2">
+                <div class="step-pane-header">
+                    <div class="step-pane-icon amber">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <h2 class="step-pane-title">KYC Verification</h2>
+                        <p class="step-pane-sub">Identity documents — PDF only, max 5 MB each</p>
+                    </div>
+                </div>
+
+                <div class="form-grid two-col">
+
+                    <!-- Aadhaar Number -->
+                    <div class="field-group" [class.has-error]="isInvalid('aadhaarNumber')"
+                        [class.has-success]="isValid('aadhaarNumber')">
+                        <label class="field-label">Aadhaar Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-credit-card input-icon"></i>
+                            <input type="text" formControlName="aadhaarNumber" class="field-input"
+                                placeholder="12-digit Aadhaar" maxlength="12" autocomplete="off" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('aadhaarNumber')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('aadhaarNumber')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('aadhaarNumber')?.errors?.['required']">Aadhaar number is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('aadhaarNumber')?.errors?.['pattern']">Must be exactly 12
+                                digits.</ng-container>
+                        </span>
+                    </div>
+
+                    <!-- PAN Number -->
+                    <div class="field-group" [class.has-error]="isInvalid('panNumber')"
+                        [class.has-success]="isValid('panNumber')">
+                        <label class="field-label">PAN Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-card-text input-icon"></i>
+                            <input type="text" formControlName="panNumber" class="field-input pan-input"
+                                placeholder="e.g. ABCDE1234F" maxlength="10" autocomplete="off"
+                                style="text-transform:uppercase" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('panNumber')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('panNumber')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('panNumber')?.errors?.['required']">PAN number is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('panNumber')?.errors?.['pattern']">Invalid PAN format (e.g.
+                                ABCDE1234F).</ng-container>
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Document Uploads -->
+                <div class="form-grid two-col upload-grid">
+
+                    <!-- Aadhaar Upload -->
+                    <div class="upload-block" [class.upload-success]="aadhaarFile" [class.upload-error]="aadhaarError">
+                        <div class="upload-label">
+                            Aadhaar Document <span class="req">*</span>
+                        </div>
+
+                        <div class="upload-zone" *ngIf="!aadhaarFile">
+                            <input type="file" accept="application/pdf" id="aadhaarUpload" hidden
+                                (change)="onAadhaarSelected($event)" />
+                            <label for="aadhaarUpload" class="upload-trigger">
+                                <div class="upload-icon-wrap amber">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <p class="upload-hint-main">Click to upload Aadhaar PDF</p>
+                                <p class="upload-hint-sub">PDF only · Max 5 MB</p>
+                            </label>
+                        </div>
+
+                        <div class="upload-file-card" *ngIf="aadhaarFile">
+                            <div class="ufc-icon amber">
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                            </div>
+                            <div class="ufc-info">
+                                <p class="ufc-name">{{ aadhaarFile.name }}</p>
+                                <p class="ufc-size">{{ formatFileSize(aadhaarFile.size) }}</p>
+                            </div>
+                            <button type="button" class="ufc-remove" (click)="removeAadhaar()">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+
+                        <p class="field-error" *ngIf="aadhaarError">
+                            <i class="bi bi-exclamation-circle"></i> {{ aadhaarError }}
+                        </p>
+                    </div>
+
+                    <!-- PAN Upload -->
+                    <div class="upload-block" [class.upload-success]="panFile" [class.upload-error]="panError">
+                        <div class="upload-label">
+                            PAN Document <span class="req">*</span>
+                        </div>
+
+                        <div class="upload-zone" *ngIf="!panFile">
+                            <input type="file" accept="application/pdf" id="panUpload" hidden
+                                (change)="onPanSelected($event)" />
+                            <label for="panUpload" class="upload-trigger">
+                                <div class="upload-icon-wrap teal">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <p class="upload-hint-main">Click to upload PAN PDF</p>
+                                <p class="upload-hint-sub">PDF only · Max 5 MB</p>
+                            </label>
+                        </div>
+
+                        <div class="upload-file-card" *ngIf="panFile">
+                            <div class="ufc-icon teal">
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                            </div>
+                            <div class="ufc-info">
+                                <p class="ufc-name">{{ panFile.name }}</p>
+                                <p class="ufc-size">{{ formatFileSize(panFile.size) }}</p>
+                            </div>
+                            <button type="button" class="ufc-remove" (click)="removePan()">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+
+                        <p class="field-error" *ngIf="panError">
+                            <i class="bi bi-exclamation-circle"></i> {{ panError }}
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Doc missing hint -->
+                <p class="docs-required-hint" *ngIf="(!aadhaarFile || !panFile) && form.get('aadhaarNumber')?.touched">
+                    <i class="bi bi-info-circle"></i>
+                    Both Aadhaar and PAN documents are required to proceed.
+                </p>
+
+            </div>
+
+            <!-- ═══════════════════════════
+           STEP 3 — Bank Details
+           ═══════════════════════════ -->
+            <div class="step-pane" *ngIf="currentStep === 3">
+                <div class="step-pane-header">
+                    <div class="step-pane-icon indigo">
+                        <i class="bi bi-bank"></i>
+                    </div>
+                    <div>
+                        <h2 class="step-pane-title">Bank Account Details</h2>
+                        <p class="step-pane-sub">For disbursement and investment transactions</p>
+                    </div>
+                </div>
+
+                <div class="form-grid two-col">
+
+                    <!-- Account Number -->
+                    <div class="field-group" [class.has-error]="isInvalid('accountNumber')"
+                        [class.has-success]="isValid('accountNumber')">
+                        <label class="field-label">Account Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-hash input-icon"></i>
+                            <input type="text" formControlName="accountNumber" class="field-input"
+                                placeholder="9-18 digit account number" maxlength="18" autocomplete="off" />
+                            <i class="bi bi-check-circle-fill success-icon" *ngIf="isValid('accountNumber')"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('accountNumber')">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('accountNumber')?.errors?.['required']">Account number is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('accountNumber')?.errors?.['pattern']">Must be 9–18 digits
+                                only.</ng-container>
+                        </span>
+                    </div>
+
+                    <!-- IFSC Code -->
+                    <div class="field-group" [class.has-error]="isInvalid('ifscCode') || ifscError"
+                        [class.has-success]="isValid('ifscCode') && ifscDetails">
+                        <label class="field-label">IFSC Code <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <i class="bi bi-building input-icon"></i>
+                            <input type="text" formControlName="ifscCode" class="field-input ifsc-input"
+                                placeholder="e.g. SBIN0001234" maxlength="11" autocomplete="off"
+                                style="text-transform:uppercase" />
+                            <span class="ifsc-spinner" *ngIf="ifscLoading">
+                                <i class="bi bi-arrow-repeat spinning"></i>
+                            </span>
+                            <i class="bi bi-check-circle-fill success-icon"
+                                *ngIf="isValid('ifscCode') && ifscDetails && !ifscLoading"></i>
+                        </div>
+                        <span class="field-error" *ngIf="isInvalid('ifscCode') && !ifscError">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <ng-container *ngIf="form.get('ifscCode')?.errors?.['required']">IFSC code is
+                                required.</ng-container>
+                            <ng-container *ngIf="form.get('ifscCode')?.errors?.['pattern']">Invalid IFSC format (e.g.
+                                SBIN0001234).</ng-container>
+                        </span>
+                        <span class="field-error" *ngIf="ifscError && !ifscLoading">
+                            <i class="bi bi-exclamation-circle"></i> {{ ifscError }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- IFSC Branch Details Card -->
+                <div class="ifsc-branch-card" *ngIf="ifscDetails && !ifscLoading">
+                    <div class="ibc-header">
+                        <div class="ibc-bank-logo">
+                            <i class="bi bi-bank2"></i>
+                        </div>
+                        <div class="ibc-bank-info">
+                            <p class="ibc-bank-name">{{ ifscDetails.BANK }}</p>
+                            <p class="ibc-ifsc-code">{{ ifscDetails.IFSC }}</p>
+                        </div>
+                        <span class="ibc-verified-badge">
+                            <i class="bi bi-patch-check-fill"></i> Verified
+                        </span>
+                    </div>
+                    <div class="ibc-details">
+                        <div class="ibc-detail-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <div>
+                                <p class="ibc-detail-label">Branch</p>
+                                <p class="ibc-detail-value">{{ ifscDetails.BRANCH }}</p>
+                            </div>
+                        </div>
+                        <div class="ibc-detail-item">
+                            <i class="bi bi-pin-map"></i>
+                            <div>
+                                <p class="ibc-detail-label">Address</p>
+                                <p class="ibc-detail-value">{{ ifscDetails.ADDRESS }}</p>
+                            </div>
+                        </div>
+                        <div class="ibc-detail-item">
+                            <i class="bi bi-map"></i>
+                            <div>
+                                <p class="ibc-detail-label">City / State</p>
+                                <p class="ibc-detail-value">{{ ifscDetails.CITY }}, {{ ifscDetails.STATE }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IFSC Loading Placeholder -->
+                <div class="ifsc-branch-skeleton" *ngIf="ifscLoading">
+                    <div class="ibs-row">
+                        <div class="ibs-avatar"></div>
+                        <div class="ibs-lines">
+                            <div class="ibs-line w60"></div>
+                            <div class="ibs-line w40"></div>
+                        </div>
+                    </div>
+                    <div class="ibs-line w80" style="margin-top:12px"></div>
+                    <div class="ibs-line w55" style="margin-top:8px"></div>
+                </div>
+
+            </div>
+
+            <!-- ═══════════════════════════
+           Form Footer Actions
+           ═══════════════════════════ -->
+            <div class="form-footer">
+                <button type="button" class="btn-outline-farm" (click)="prevStep()" *ngIf="currentStep > 1"
+                    [disabled]="submitting">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
+                <div class="footer-spacer"></div>
+                <button type="button" class="btn-ghost-farm" (click)="resetForm()" *ngIf="currentStep === 1"
+                    [disabled]="submitting">
+                    <i class="bi bi-x-circle"></i> Clear
+                </button>
+                <button type="button" class="btn-primary-farm" (click)="nextStep()" *ngIf="currentStep < totalSteps"
+                    [disabled]="submitting">
+                    Continue <i class="bi bi-arrow-right"></i>
+                </button>
+                <button type="submit" class="btn-primary-farm btn-submit" *ngIf="currentStep === totalSteps"
+                    [disabled]="submitting || form.invalid || !aadhaarFile || !panFile">
+                    <span *ngIf="!submitting">
+                        <i class="bi bi-person-check-fill"></i> Register Investor
+                    </span>
+                    <span *ngIf="submitting" class="btn-loading">
+                        <i class="bi bi-arrow-repeat spinning"></i> Registering…
+                    </span>
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>

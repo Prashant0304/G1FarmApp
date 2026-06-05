@@ -1,0 +1,961 @@
+/* =====================================================
+   register-investor.component.css
+   Aesthetic: Field Operations Center — Investor Onboarding
+   — parchment warmth, forest authority, harvest gold
+   ===================================================== */
+
+.register-investor {
+  font-family: "DM Sans", sans-serif;
+  animation: pageFadeIn 0.4s ease both;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ══════════════════════════════════════════
+   PAGE HEADER
+   ══════════════════════════════════════════ */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.page-header-breadcrumb {
+  font-size: 0.78rem;
+  color: var(--c-ink-faint);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.page-header-breadcrumb i {
+  font-size: 0.7rem;
+}
+
+.page-header-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.9rem;
+  color: var(--c-green-deep);
+  margin: 0 0 4px;
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+}
+
+.title-accent {
+  color: var(--c-green-light);
+  position: relative;
+}
+
+.title-accent::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--c-green-light), transparent);
+  border-radius: 2px;
+}
+
+.page-header-sub {
+  font-size: 0.8rem;
+  color: var(--c-ink-faint);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   STEP PROGRESS BAR
+   ══════════════════════════════════════════ */
+.step-progress-bar {
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.step-track {
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  height: 3px;
+  background: var(--c-border);
+  border-radius: 4px;
+  z-index: 0;
+}
+
+.step-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c-green-mid), var(--c-green-light));
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-nodes {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+}
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c-white);
+  border: 2.5px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--c-ink-faint);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.step-node.active .step-circle {
+  border-color: var(--c-green-mid);
+  background: var(--c-green-mid);
+  color: white;
+  box-shadow: 0 0 0 5px rgba(45, 122, 79, 0.15);
+}
+
+.step-node.done .step-circle {
+  border-color: var(--c-green-light);
+  background: var(--c-green-light);
+  color: white;
+}
+
+.step-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--c-ink-faint);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.step-node.active .step-label {
+  color: var(--c-green-deep);
+}
+
+.step-node.done .step-label {
+  color: var(--c-green-mid);
+}
+
+/* ══════════════════════════════════════════
+   FORM CARD
+   ══════════════════════════════════════════ */
+.form-card {
+  background: var(--c-white);
+  border: 1.5px solid var(--c-border);
+  border-radius: 18px;
+  overflow: hidden;
+  animation: panelIn 0.5s ease both;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ══════════════════════════════════════════
+   STEP PANE
+   ══════════════════════════════════════════ */
+.step-pane {
+  padding: 28px 28px 8px;
+  animation: stepIn 0.3s ease both;
+}
+
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-pane-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--c-green-mist, #f0f7f3);
+}
+
+.step-pane-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.step-pane-icon.green {
+  background: var(--c-green-pale, #e8f5ee);
+  color: var(--c-green-mid, #2d7a4f);
+}
+.step-pane-icon.amber {
+  background: #fff3d6;
+  color: #c47a00;
+}
+.step-pane-icon.indigo {
+  background: #e8e8fd;
+  color: #4040c0;
+}
+
+.step-pane-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--c-green-deep, #1a3d2b);
+  margin: 0 0 2px;
+  letter-spacing: -0.3px;
+}
+
+.step-pane-sub {
+  font-size: 0.78rem;
+  color: var(--c-ink-faint, #9aab9e);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
+   FORM GRID
+   ══════════════════════════════════════════ */
+.form-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.form-grid.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* ══════════════════════════════════════════
+   FIELD GROUP
+   ══════════════════════════════════════════ */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--c-ink-soft, #4a5e52);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.req {
+  color: #c0384a;
+  margin-left: 2px;
+}
+
+/* Input wrap */
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 13px;
+  color: var(--c-ink-faint, #9aab9e);
+  font-size: 0.9rem;
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.2s ease;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 36px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--c-ink-faint, #9aab9e);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.field-input {
+  width: 100%;
+  padding: 11px 40px 11px 36px;
+  background: var(--c-green-mist, #f5faf7);
+  border: 1.5px solid var(--c-border, #d4e4da);
+  border-radius: 11px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.88rem;
+  color: var(--c-ink, #2a3e30);
+  transition: all 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.field-input.with-prefix {
+  padding-left: 68px;
+}
+
+.field-input::placeholder {
+  color: var(--c-ink-faint, #9aab9e);
+}
+
+.field-input:focus {
+  border-color: var(--c-green-mid, #2d7a4f);
+  background: var(--c-white, #fff);
+  box-shadow: 0 0 0 3.5px rgba(45, 122, 79, 0.12);
+}
+
+/* Success / error state on the group */
+.field-group.has-success .field-input {
+  border-color: var(--c-green-light, #4caf7a);
+  background: var(--c-white);
+}
+
+.field-group.has-success .input-icon {
+  color: var(--c-green-mid);
+}
+
+.field-group.has-error .field-input {
+  border-color: #c0384a;
+  background: #fff8f8;
+}
+
+.field-group.has-error .input-icon {
+  color: #c0384a;
+}
+
+/* Success tick */
+.success-icon {
+  position: absolute;
+  right: 12px;
+  color: var(--c-green-light, #4caf7a);
+  font-size: 0.85rem;
+  animation: popIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Error message */
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #c0384a;
+  animation: slideDown 0.2s ease both;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.field-error i {
+  font-size: 0.7rem;
+}
+
+/* PAN / IFSC uppercase hint */
+.pan-input,
+.ifsc-input {
+  letter-spacing: 0.5px;
+}
+
+/* IFSC spinner */
+.ifsc-spinner {
+  position: absolute;
+  right: 12px;
+  color: var(--c-green-mid);
+  font-size: 0.9rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spinning {
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* ══════════════════════════════════════════
+   UPLOAD BLOCKS
+   ══════════════════════════════════════════ */
+.upload-grid {
+  margin-top: 20px;
+}
+
+.upload-block {
+  border: 1.5px dashed var(--c-border, #d4e4da);
+  border-radius: 14px;
+  padding: 6px;
+  background: var(--c-green-mist, #f5faf7);
+  transition: all 0.2s ease;
+}
+
+.upload-block.upload-success {
+  border-color: var(--c-green-light, #4caf7a);
+  border-style: solid;
+  background: #f0fbf5;
+}
+
+.upload-block.upload-error {
+  border-color: #c0384a;
+  border-style: solid;
+  background: #fff8f8;
+}
+
+.upload-label {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--c-ink-faint, #9aab9e);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 8px 10px 4px;
+}
+
+.upload-zone {
+  padding: 4px;
+}
+
+.upload-trigger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 16px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.upload-trigger:hover {
+  background: rgba(45, 122, 79, 0.06);
+}
+
+.upload-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  transition: transform 0.2s ease;
+}
+
+.upload-trigger:hover .upload-icon-wrap {
+  transform: translateY(-3px);
+}
+
+.upload-icon-wrap.amber {
+  background: #fff3d6;
+  color: #c47a00;
+}
+.upload-icon-wrap.teal {
+  background: #d6f0f0;
+  color: #1a8a8a;
+}
+
+.upload-hint-main {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--c-green-deep, #1a3d2b);
+  margin: 0;
+}
+
+.upload-hint-sub {
+  font-size: 0.72rem;
+  color: var(--c-ink-faint, #9aab9e);
+  margin: 0;
+}
+
+/* Uploaded file card */
+.upload-file-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px;
+  background: var(--c-white, #fff);
+  border-radius: 10px;
+  animation: popIn 0.25s ease both;
+}
+
+.ufc-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.ufc-icon.amber {
+  background: #fff3d6;
+  color: #c47a00;
+}
+.ufc-icon.teal {
+  background: #d6f0f0;
+  color: #1a8a8a;
+}
+
+.ufc-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ufc-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--c-ink, #2a3e30);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ufc-size {
+  font-size: 0.7rem;
+  color: var(--c-ink-faint, #9aab9e);
+  margin: 0;
+}
+
+.ufc-remove {
+  background: #fde8ed;
+  border: none;
+  color: #c0384a;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ufc-remove:hover {
+  background: #c0384a;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Docs required hint */
+.docs-required-hint {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: #c47a00;
+  background: #fff8e6;
+  border: 1px solid #f0d48a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  animation: slideDown 0.2s ease both;
+}
+
+/* ══════════════════════════════════════════
+   IFSC BRANCH CARD
+   ══════════════════════════════════════════ */
+.ifsc-branch-card {
+  margin-top: 20px;
+  background: var(--c-green-mist, #f5faf7);
+  border: 1.5px solid var(--c-green-light, #4caf7a);
+  border-radius: 14px;
+  overflow: hidden;
+  animation: popIn 0.3s ease both;
+}
+
+.ibc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--c-green-pale, #e8f5ee);
+  border-bottom: 1px solid rgba(76, 175, 122, 0.2);
+}
+
+.ibc-bank-logo {
+  width: 40px;
+  height: 40px;
+  background: var(--c-white, #fff);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--c-green-mid, #2d7a4f);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.ibc-bank-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ibc-bank-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-green-deep, #1a3d2b);
+  margin: 0 0 2px;
+}
+
+.ibc-ifsc-code {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--c-green-mid, #2d7a4f);
+  margin: 0;
+  letter-spacing: 0.8px;
+  font-family: "Courier New", monospace;
+}
+
+.ibc-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1a7a40;
+  background: white;
+  border: 1px solid #a8dbbf;
+  padding: 4px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.ibc-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ibc-detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 18px;
+  border-bottom: 1px solid rgba(76, 175, 122, 0.12);
+}
+
+.ibc-detail-item:last-child {
+  border-bottom: none;
+}
+
+.ibc-detail-item > i {
+  color: var(--c-green-light, #4caf7a);
+  font-size: 0.85rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.ibc-detail-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--c-ink-faint, #9aab9e);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin: 0 0 2px;
+}
+
+.ibc-detail-value {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--c-ink, #2a3e30);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════
+   IFSC SKELETON
+   ══════════════════════════════════════════ */
+@keyframes shimmer {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+.ifsc-branch-skeleton {
+  margin-top: 20px;
+  background: var(--c-green-mist, #f5faf7);
+  border: 1.5px solid var(--c-border, #d4e4da);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.ibs-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.ibs-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--c-green-mist) 25%,
+    #dff0e8 50%,
+    var(--c-green-mist) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.4s infinite;
+  flex-shrink: 0;
+}
+
+.ibs-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ibs-line {
+  height: 10px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--c-green-mist) 25%,
+    #dff0e8 50%,
+    var(--c-green-mist) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.ibs-line.w80 {
+  width: 80%;
+}
+.ibs-line.w60 {
+  width: 60%;
+}
+.ibs-line.w55 {
+  width: 55%;
+}
+.ibs-line.w40 {
+  width: 40%;
+}
+
+/* ══════════════════════════════════════════
+   FORM FOOTER
+   ══════════════════════════════════════════ */
+.form-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 28px;
+  border-top: 1px solid var(--c-border, #d4e4da);
+  background: var(--c-green-mist, #f5faf7);
+  margin-top: 24px;
+}
+
+.footer-spacer {
+  flex: 1;
+}
+
+/* Buttons */
+.btn-primary-farm,
+.btn-outline-farm,
+.btn-ghost-farm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary-farm {
+  background: linear-gradient(
+    135deg,
+    var(--c-green-mid, #2d7a4f),
+    var(--c-green-deep, #1a3d2b)
+  );
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(45, 122, 79, 0.25);
+}
+
+.btn-primary-farm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(45, 122, 79, 0.35);
+  background: linear-gradient(135deg, #35905c, #1a5c38);
+}
+
+.btn-primary-farm:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(45, 122, 79, 0.2);
+}
+
+.btn-primary-farm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-submit {
+  min-width: 170px;
+  justify-content: center;
+}
+
+.btn-outline-farm {
+  background: var(--c-white, #fff);
+  border-color: var(--c-border, #d4e4da);
+  color: var(--c-ink-soft, #4a5e52);
+}
+
+.btn-outline-farm:hover:not(:disabled) {
+  border-color: var(--c-green-light, #4caf7a);
+  background: var(--c-green-pale, #e8f5ee);
+  color: var(--c-green-mid, #2d7a4f);
+  transform: translateY(-1px);
+}
+
+.btn-outline-farm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost-farm {
+  background: transparent;
+  border-color: transparent;
+  color: var(--c-ink-faint, #9aab9e);
+}
+
+.btn-ghost-farm:hover:not(:disabled) {
+  background: #fde8ed;
+  color: #c0384a;
+  border-color: #f8b8c4;
+}
+
+.btn-ghost-farm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Loading state in button */
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .form-grid.two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .step-pane {
+    padding: 20px 16px 8px;
+  }
+
+  .form-footer {
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+
+  .page-header-title {
+    font-size: 1.4rem;
+  }
+
+  .step-label {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .step-nodes {
+    padding: 0 8px;
+  }
+
+  .step-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 0.78rem;
+  }
+
+  .ibc-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-primary-farm,
+  .btn-outline-farm,
+  .btn-ghost-farm {
+    padding: 10px 16px;
+    font-size: 0.82rem;
+  }
+}

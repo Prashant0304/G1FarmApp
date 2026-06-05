@@ -1,0 +1,44 @@
+<div class="otp-container">
+
+    <h2 class="otp-title">Verify OTP</h2>
+
+    <p class="otp-subtitle">
+        OTP sent to <strong>{{ phone }}</strong>
+    </p>
+    <p class="otp-subtitle">
+        OTP: <strong>{{ generatedOtp }}</strong>
+    </p>
+
+    <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+
+        <input type="text" maxlength="6" formControlName="otp" class="otp-input" placeholder="Enter OTP" />
+
+        <div class="btn-row">
+
+            <button class="verify-btn" type="submit">
+                Verify OTP
+            </button>
+
+            <!-- ✅ Cancel Button -->
+            <button class="cancel-btn" type="button" (click)="cancelOtp()">
+                Cancel
+            </button>
+
+        </div>
+
+    </form>
+
+    <!-- ✅ Resend Section -->
+    <div class="resend">
+        Didn't receive OTP?
+
+        <span (click)="resendOtp()" [class.disabled]="resendDisabled">
+            Resend
+        </span>
+
+        @if (resendDisabled) {
+        <small> ({{ countdown }}s)</small>
+        }
+    </div>
+
+</div>

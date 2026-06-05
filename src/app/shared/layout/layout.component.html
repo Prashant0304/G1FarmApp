@@ -1,0 +1,183 @@
+<!-- src/app/shared/layout/layout.component.html -->
+<div class="app-shell" [class.sidebar-open]="sidebarOpen">
+
+  <!-- Mobile backdrop -->
+  <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR
+       ═══════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-icon"><i class="bi bi-flower2"></i></div>
+      <div class="brand-text">
+        <span class="brand-name">FarmFlow</span>
+        <span class="brand-tagline">Farm Management</span>
+      </div>
+      <button class="sidebar-close-btn" (click)="closeSidebar()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="nav-section-label">Main Menu</div>
+
+    <!-- ── Dynamic nav items ── -->
+    <nav class="sidebar-nav">
+
+      <!-- Skeleton while loading -->
+      @if (isMenuLoading) {
+        @for (s of [1,2,3,4,5]; track s) {
+          <div class="nav-item-skeleton">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-label"></div>
+          </div>
+        }
+      }
+
+      <!-- Actual menu items from API -->
+      @else {
+        @for (item of menuItems; track item.MenuId) {
+          <a class="nav-item"
+             [routerLink]="item.MenuRoute"
+             routerLinkActive="active"
+             (click)="onNavClick()">
+            <div class="nav-icon">
+              <i [class]="item.Icon"></i>
+            </div>
+            <span class="nav-label">{{ item.MenuLabel }}</span>
+            <div class="nav-indicator"></div>
+          </a>
+        }
+      }
+
+    </nav>
+
+    <!-- Settings — always present, not from API -->
+    <div class="nav-section-label" style="margin-top:8px">Settings</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" routerLink="/admin/settings" routerLinkActive="active" (click)="onNavClick()">
+        <div class="nav-icon"><i class="bi bi-gear"></i></div>
+        <span class="nav-label">Settings</span>
+        <div class="nav-indicator"></div>
+      </a>
+    </nav>
+
+    <!-- Sidebar footer / user -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar">{{ getUserInitials() }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ userName }}</div>
+          <div class="user-role">Administrator</div>
+        </div>
+        <button class="user-logout-btn" (click)="logout()" title="Logout">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN WRAPPER
+       ═══════════════════════════════════════════ -->
+  <div class="main-wrapper">
+
+    <!-- HEADER -->
+    <header class="app-header">
+
+      <div class="header-left">
+        <button class="sidebar-toggle" (click)="toggleSidebar()" title="Toggle sidebar">
+          <span class="toggle-bar"></span>
+          <span class="toggle-bar"></span>
+          <span class="toggle-bar"></span>
+        </button>
+        <div class="header-breadcrumb">
+          <span class="breadcrumb-app">FarmFlow</span>
+          <i class="bi bi-chevron-right breadcrumb-sep"></i>
+          <span class="breadcrumb-page">{{ currentPageTitle }}</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+
+        <!-- Language switcher -->
+        <div class="lang-switcher">
+          <button class="lang-btn" (click)="toggleLangDropdown()">
+            <i class="bi bi-translate"></i>
+            <span class="lang-current">
+              {{ currentLangMeta?.label ?? '🌐' }}
+              {{ currentLangMeta?.flag?.toUpperCase() ?? '...' }}
+            </span>
+            <i class="bi bi-chevron-down chevron" [class.rotated]="langDropdownOpen"></i>
+          </button>
+
+          @if (langDropdownOpen) {
+            <div class="dropdown-panel lang-panel">
+              <div class="dropdown-header">Language</div>
+              @for (lang of languages; track lang.numericCode) {
+                <button class="dropdown-item"
+                        [class.active]="currentLang === lang.numericCode"
+                        (click)="changeLanguage(lang.numericCode)">
+                  <span class="lang-flag">{{ lang.flag }}</span>
+                  <span>{{ lang.label }}</span>
+                  @if (currentLang === lang.numericCode) {
+                    <i class="bi bi-check2 check-icon"></i>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="header-divider"></div>
+
+        <!-- Notifications -->
+        <button class="header-icon-btn" title="Notifications">
+          <i class="bi bi-bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+
+        <!-- Profile dropdown -->
+        <div class="profile-dropdown">
+          <button class="profile-trigger" (click)="toggleProfileDropdown()">
+            <div class="profile-avatar">{{ getUserInitials() }}</div>
+            <div class="profile-info">
+              <span class="profile-name">{{ userName }}</span>
+              <span class="profile-role">Admin</span>
+            </div>
+            <i class="bi bi-chevron-down chevron" [class.rotated]="profileDropdownOpen"></i>
+          </button>
+
+          @if (profileDropdownOpen) {
+            <div class="dropdown-panel profile-panel">
+              <div class="dropdown-header">
+                <div class="dp-user-name">{{ userName }}</div>
+                <div class="dp-user-email">{{ userEmail }}</div>
+              </div>
+              <button class="dropdown-item" (click)="goToProfile()">
+                <i class="bi bi-person-circle"></i> My Profile
+              </button>
+              <button class="dropdown-item" (click)="goToSettings()">
+                <i class="bi bi-gear"></i> Settings
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item danger" (click)="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </div>
+          }
+        </div>
+
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<!-- src/app/shared/loader/loader.component.html -->
+<div class="loader-overlay" [class.loader-hidden]="!isVisible">
+  <div class="loader-content">
+
+    <!-- Field scene -->
+    <div class="field-scene">
+
+      <!-- Rain drops -->
+      <div class="drops">
+        <div class="drop" *ngFor="let d of drops; let i = index" [style.left]="d.left + 'px'"
+          [style.animation-delay]="d.delay + 's'">
+        </div>
+      </div>
+
+      <!-- Cloud -->
+      <div class="ldr-cloud">
+        <div class="cloud-body">
+          <div class="cloud-puff p1"></div>
+          <div class="cloud-puff p2"></div>
+        </div>
+      </div>
+
+      <!-- Sun -->
+      <div class="ldr-sun"></div>
+
+      <!-- Plants -->
+      <div class="plant" *ngFor="let p of plants; let i = index" [style.left]="p.left + 'px'"
+        [style.animation-delay]="p.delay + 's'" [style.animation-duration]="p.duration + 's'">
+        <div class="leaf" [style.width]="p.leafW + 'px'" [style.height]="p.leafH + 'px'"></div>
+        <div class="stem" [style.height]="p.stemH + 'px'"></div>
+      </div>
+
+      <div class="ground-line"></div>
+      <div class="ground"></div>
+    </div>
+
+    <!-- Brand -->
+    <div class="loader-brand">
+      <span class="loader-brand-name">G1 Farm</span>
+      <span class="loader-brand-tag">Farm Management</span>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="loader-progress">
+      <div class="ldr-progress-track">
+        <div class="ldr-progress-fill" [style.width]="progress + '%'"></div>
+      </div>
+    </div>
+
+    <!-- Message + dots -->
+    <div class="loader-status">
+      <span class="loader-msg">{{ message }}</span>
+      <span class="ldr-dots">
+        <span class="ldr-dot"></span>
+        <span class="ldr-dot"></span>
+        <span class="ldr-dot"></span>
+      </span>
+    </div>
+
+  </div>
+</div>

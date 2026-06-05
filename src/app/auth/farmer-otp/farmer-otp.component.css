@@ -1,0 +1,324 @@
+/* =========================================================
+   G1Farm OTP Dialog — Responsive Premium UI
+   ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   OTP CONTAINER
+   ========================================================= */
+
+.otp-container {
+  width: 100%;
+  max-width: 430px;
+  padding: 36px 32px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  font-family: "DM Sans", sans-serif;
+}
+
+/* top gradient border */
+.otp-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, #16a34a, #22c55e, #4ade80);
+}
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.otp-title {
+  font-family: "Fraunces", serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.otp-subtitle {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.otp-subtitle strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+form {
+  width: 100%;
+  margin-top: 28px;
+}
+
+/* =========================================================
+   OTP INPUT
+   ========================================================= */
+
+.otp-input {
+  width: 100%;
+  height: 58px;
+  border: 1.5px solid #dbe2ea;
+  border-radius: 16px;
+  background: #fafafa;
+  outline: none;
+  padding: 0 18px;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 10px;
+  color: #0f172a;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+  font-family: "DM Sans", sans-serif;
+}
+
+.otp-input::placeholder {
+  color: #cbd5e1;
+  letter-spacing: 3px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.otp-input:focus {
+  border-color: #16a34a;
+  background: #ffffff;
+  box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+}
+
+/* =========================================================
+   BUTTON ROW
+   ========================================================= */
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+/* =========================================================
+   COMMON BUTTON
+   ========================================================= */
+
+.verify-btn,
+.cancel-btn {
+  flex: 1;
+  height: 50px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* =========================================================
+   VERIFY BUTTON
+   ========================================================= */
+
+.verify-btn {
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2);
+}
+
+.verify-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 24px rgba(22, 163, 74, 0.28);
+}
+
+.verify-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
+
+.cancel-btn {
+  border: 1.5px solid #dbe2ea;
+  background: #f8fafc;
+  color: #334155;
+}
+
+.cancel-btn:hover {
+  background: #eef2f7;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   RESEND
+   ========================================================= */
+
+.resend {
+  margin-top: 24px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.resend span {
+  margin-left: 6px;
+  color: #16a34a;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.resend span:hover {
+  text-decoration: underline;
+}
+
+.resend span.disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.resend small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* =========================================================
+   TABLET VIEW
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .otp-container {
+    max-width: 100%;
+    padding: 32px 24px;
+    border-radius: 20px;
+  }
+
+  .otp-title {
+    font-size: 26px;
+  }
+
+  .otp-input {
+    height: 56px;
+    font-size: 22px;
+    letter-spacing: 8px;
+  }
+}
+
+/* =========================================================
+   MOBILE VIEW
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .otp-container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    padding: 44px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .otp-container::before {
+    height: 4px;
+  }
+
+  .otp-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .otp-subtitle {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  form {
+    margin-top: 26px;
+  }
+
+  .otp-input {
+    height: 54px;
+    border-radius: 14px;
+    font-size: 20px;
+    letter-spacing: 6px;
+    padding: 0 14px;
+  }
+
+  .btn-row {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .verify-btn,
+  .cancel-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .resend {
+    margin-top: 22px;
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .otp-container {
+    padding: 38px 18px;
+  }
+
+  .otp-title {
+    font-size: 22px;
+  }
+
+  .otp-input {
+    height: 50px;
+    font-size: 18px;
+    letter-spacing: 4px;
+  }
+
+  .verify-btn,
+  .cancel-btn {
+    height: 46px;
+    font-size: 13px;
+  }
+}

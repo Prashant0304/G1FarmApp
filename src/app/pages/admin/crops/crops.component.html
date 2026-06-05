@@ -1,0 +1,470 @@
+<!-- src/app/pages/admin/crops/crops.component.html -->
+<div class="crops-page">
+
+  <!-- ═══════════ PAGE HEADER ═══════════ -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">🌱</div>
+      <div>
+        <h1 class="page-title">Crop Registry</h1>
+        <p class="page-subtitle">Define crops, categories & growth stage timelines</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="openNewCropForm()">
+      <i class="bi bi-plus-lg"></i> Add Crop
+    </button>
+  </div>
+
+  <!-- ═══════════ 3-COLUMN LAYOUT ═══════════ -->
+  <div class="three-col-layout" [class.show-timeline]="selectedCrop" [class.show-form]="formOpen">
+
+    <!-- ══════════════════════════════
+         COL 1 — CROP CARDS
+         ══════════════════════════════ -->
+    <div class="col-crops">
+
+      <!-- Toolbar -->
+      <div class="list-toolbar">
+        <div class="search-box">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" placeholder="Search crops…" [(ngModel)]="searchText" (input)="onSearch()" />
+          @if (searchText) {
+          <button class="clear-btn" (click)="clearSearch()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          }
+        </div>
+        <span class="total-badge">{{ totalRecords }}</span>
+      </div>
+
+      <!-- Skeleton -->
+      @if (isLoading) {
+      <div class="cards-list">
+        @for (s of skeletons; track s) {
+        <div class="crop-card skeleton-card">
+          <div class="sk-emoji"></div>
+          <div class="sk-lines">
+            <div class="sk-line w70"></div>
+            <div class="sk-line w45"></div>
+          </div>
+          <div class="sk-pills"></div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Empty -->
+      @else if (crops.length === 0) {
+      <div class="empty-state">
+        <div class="empty-emoji">🌾</div>
+        <p class="empty-title">No crops yet</p>
+        <p class="empty-sub">Add your first crop to get started</p>
+        <button class="btn-primary sm" (click)="openNewCropForm()">
+          <i class="bi bi-plus-lg"></i> Add Crop
+        </button>
+      </div>
+      }
+
+      <!-- Cards -->
+      @else {
+      <div class="cards-list">
+        @for (crop of crops; track crop.CropId; let i = $index) {
+        <div class="crop-card" [class.is-active]="selectedCrop?.CropId === crop.CropId"
+          [style.animation-delay]="(i * 0.05) + 's'" (click)="selectCrop(crop)">
+
+          <!-- Top: emoji + action buttons -->
+          <div class="card-left">
+            <div class="crop-emoji">{{ getCropEmoji(crop.CropKey) }}</div>
+            <div class="card-actions">
+              <button class="icon-btn stage-btn" title="View Stages"
+                (click)="$event.stopPropagation(); selectCrop(crop)">
+                <i class="bi bi-diagram-3"></i>
+              </button>
+              <button class="icon-btn edit-btn" title="Edit Crop"
+                (click)="$event.stopPropagation(); openEditCropForm(crop)">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Middle: crop name + key -->
+          <div class="card-body">
+            <div class="crop-name">{{ crop.CropName }}</div>
+            <div class="crop-key-tag">{{ crop.CropKey }}</div>
+          </div>
+
+          <!-- Bottom: stat pills -->
+          <div class="card-right">
+            <span class="meta-pill days">
+              <i class="bi bi-clock-history"></i> {{ crop.GrowthDurationDays }}d
+            </span>
+            <span class="meta-pill uom">
+              <i class="bi bi-box-seam"></i> {{ getUomLabel(crop.DefaultUomId) }}
+            </span>
+          </div>
+
+        </div>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" [disabled]="pageNumber === 1" (click)="prevPage()">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="page-label">{{ pageNumber }} / {{ totalPages }}</span>
+        <button class="page-btn" [disabled]="pageNumber === totalPages" (click)="nextPage()">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+      }
+      }
+    </div>
+
+    <!-- ══════════════════════════════
+         COL 2 — STAGES TIMELINE
+         ══════════════════════════════ -->
+    <div class="col-timeline col-visible">
+
+      @if (selectedCrop) {
+
+      <!-- Timeline header -->
+      <div class="timeline-header">
+        <div class="timeline-crop-info">
+          <span class="tl-emoji">{{ getCropEmoji(selectedCrop.CropKey) }}</span>
+          <div>
+            <div class="tl-crop-name">{{ selectedCrop.CropName }}</div>
+            <div class="tl-crop-sub">{{ selectedCrop.GrowthDurationDays }} day growth cycle</div>
+          </div>
+        </div>
+        <div class="timeline-header-actions">
+          <button class="btn-outline-sm" (click)="openAddStageForm()">
+            <i class="bi bi-plus-lg"></i> Add Stage
+          </button>
+          <button class="icon-btn close-tl-btn" (click)="closeTimeline()" title="Close">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress bar showing total coverage -->
+      <div class="coverage-bar-wrap">
+        <div class="coverage-label">
+          <span>Stage Coverage</span>
+          <span class="coverage-pct">{{ getStageCoverage() }}%</span>
+        </div>
+        <div class="coverage-track">
+          <div class="coverage-fill" [style.width]="getStageCoverage() + '%'"></div>
+        </div>
+      </div>
+
+      <!-- Stages loading -->
+      @if (isLoadingStages) {
+      <div class="stages-loading">
+        <div class="stage-sk" *ngFor="let s of [1,2,3]">
+          <div class="stage-sk-dot"></div>
+          <div class="stage-sk-body">
+            <div class="sk-line w60"></div>
+            <div class="sk-line w40"></div>
+          </div>
+        </div>
+      </div>
+      }
+
+      <!-- No stages yet -->
+      @else if (stages.length === 0) {
+      <div class="no-stages">
+        <div class="no-stages-icon">🌿</div>
+        <p>No stages defined yet</p>
+        <button class="btn-outline-sm" (click)="openAddStageForm()">
+          <i class="bi bi-plus-lg"></i> Add First Stage
+        </button>
+      </div>
+      }
+
+      <!-- Timeline -->
+      @else {
+      <div class="timeline-scroll">
+
+        <!-- Visual progress bar with stage segments -->
+        <div class="segments-bar-wrap">
+          <div class="segments-track">
+            @for (stage of stages; track stage.StageId) {
+            <div class="segment-block" [style.left.%]="getSegmentLeft(stage)" [style.width.%]="getSegmentWidth(stage)"
+              [style.background]="getStageColor(stage.StageId)"
+              [title]="stage.StageKey + ': Day ' + stage.DayFrom + '–' + stage.DayTo"
+              (click)="openEditStageForm(stage)">
+            </div>
+            }
+          </div>
+          <div class="segments-ends">
+            <span>Day 1</span>
+            <span>Day {{ selectedCrop.GrowthDurationDays }}</span>
+          </div>
+        </div>
+
+        <!-- Stage nodes -->
+        <div class="stage-nodes">
+          @for (stage of stages; track stage.StageId; let i = $index; let last = $last) {
+
+          <div class="stage-node" [class.node-selected]="editingStage?.StageId === stage.StageId"
+            [style.animation-delay]="(i * 0.08) + 's'">
+
+            <!-- Connector line -->
+            @if (!last) {
+            <div class="node-connector"></div>
+            }
+
+            <!-- Node dot -->
+            <div class="node-dot" [style.background]="getStageColor(stage.StageId)">
+              <span class="node-num">{{ i + 1 }}</span>
+            </div>
+
+            <!-- Node content -->
+            <div class="node-content">
+              <div class="node-header">
+                <div class="node-title">{{ stage.StageKey }}</div>
+                <div class="node-actions">
+                  <button class="icon-btn xs edit-btn" title="Edit stage" (click)="openEditStageForm(stage)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="icon-btn xs del-btn" title="Delete stage" (click)="deleteStage(stage)">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="node-days">
+                <i class="bi bi-calendar-range"></i>
+                Day {{ stage.DayFrom }} → Day {{ stage.DayTo }}
+                <span class="node-duration">
+                  ({{ stage.DayTo - stage.DayFrom + 1 }} days)
+                </span>
+              </div>
+
+              <!-- Mini bar inside card -->
+              <div class="node-mini-bar">
+                <div class="node-mini-fill" [style.left.%]="getSegmentLeft(stage)"
+                  [style.width.%]="getSegmentWidth(stage)" [style.background]="getStageColor(stage.StageId)">
+                </div>
+              </div>
+            </div>
+
+          </div>
+          }
+        </div>
+
+      </div>
+      }
+      }
+
+      <!-- Persistent right panel when nothing selected -->
+      @else if (!formOpen) {
+      <div class="right-panel-default">
+
+        <!-- Quick stats -->
+        <div class="rp-stats-grid">
+          <div class="rp-stat-card">
+            <div class="rp-stat-icon green">🌱</div>
+            <div class="rp-stat-val">{{ totalRecords }}</div>
+            <div class="rp-stat-label">Total Crops</div>
+          </div>
+          <div class="rp-stat-card">
+            <div class="rp-stat-icon amber">📋</div>
+            <div class="rp-stat-val">{{ totalPages }}</div>
+            <div class="rp-stat-label">Pages</div>
+          </div>
+        </div>
+
+        <!-- Quick add card -->
+        <div class="rp-add-card" (click)="openNewCropForm()">
+          <div class="rp-add-icon">➕</div>
+          <div class="rp-add-text">
+            <div class="rp-add-title">Add New Crop</div>
+            <div class="rp-add-sub">Define crop details & first growth stage</div>
+          </div>
+          <i class="bi bi-arrow-right-circle rp-add-arrow"></i>
+        </div>
+
+        <!-- Instructions -->
+        <div class="rp-instructions">
+          <div class="rp-inst-title">
+            <i class="bi bi-info-circle"></i> How it works
+          </div>
+          <div class="rp-inst-item">
+            <div class="rp-inst-step">1</div>
+            <div>Click <strong>Add Crop</strong> to register a new crop with its first growth stage</div>
+          </div>
+          <div class="rp-inst-item">
+            <div class="rp-inst-step">2</div>
+            <div>Click any <strong>crop card</strong> to view and manage its growth timeline</div>
+          </div>
+          <div class="rp-inst-item">
+            <div class="rp-inst-step">3</div>
+            <div>Use <i class="bi bi-diagram-3"></i> on a card to add more stages to an existing crop</div>
+          </div>
+          <div class="rp-inst-item">
+            <div class="rp-inst-step">4</div>
+            <div>Use <i class="bi bi-pencil"></i> on a card to edit crop details</div>
+          </div>
+        </div>
+
+        <!-- Category breakdown if crops exist -->
+        @if (crops.length > 0) {
+        <div class="rp-crops-preview">
+          <div class="rp-preview-title">Recent Crops</div>
+          <div class="rp-preview-list">
+            @for (crop of crops.slice(0, 5); track crop.CropId) {
+            <div class="rp-preview-item" (click)="selectCrop(crop)">
+              <span class="rp-preview-emoji">{{ getCropEmoji(crop.CropKey) }}</span>
+              <span class="rp-preview-name">{{ crop.CropName }}</span>
+              <span class="rp-preview-days">{{ crop.GrowthDurationDays }}d</span>
+              <i class="bi bi-chevron-right rp-preview-chevron"></i>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+      </div>
+      }
+
+    </div>
+
+    <!-- ══════════════════════════════
+         COL 3 — ADD / EDIT FORM
+         ══════════════════════════════ -->
+    <div class="col-form" [class.col-visible]="formOpen">
+      <div class="form-card">
+
+        <!-- Form header -->
+        <div class="form-header">
+          <div class="form-header-title">
+            <i class="bi" [ngClass]="{
+                 'bi-pencil-square': isEditMode && !isStageForm,
+                 'bi-seedling':      !isEditMode && !isStageForm,
+                 'bi-diagram-3':     isStageForm
+               }"></i>
+            <span>{{ getFormTitle() }}</span>
+          </div>
+          <button class="icon-btn close-form-btn" (click)="closeForm()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="form-body">
+
+          <!-- ── CROP FIELDS ── -->
+          @if (!isStageForm) {
+          <div class="form-section">
+            <div class="fsec-label">
+              <span class="fsec-dot green"></span> Crop Details
+            </div>
+
+            <div class="field-row-2">
+              <div class="field">
+                <label>Crop Name *</label>
+                <input type="text" placeholder="e.g. Tomato" [(ngModel)]="form.cropKey" />
+              </div>
+              <div class="field">
+                <label>Category *</label>
+                <input type="text" placeholder="e.g. Vegetable" [(ngModel)]="form.categoryKey" />
+              </div>
+            </div>
+
+            <div class="field-row-2">
+              <div class="field">
+                <label>Growth Duration *</label>
+                <div class="input-unit-wrap">
+                  <input type="number" min="1" placeholder="90" [(ngModel)]="form.growthDurationDays" />
+                  <span class="unit">days</span>
+                </div>
+              </div>
+              <div class="field">
+                <label>Unit of Measure *</label>
+                <div class="select-wrap">
+                  <select [(ngModel)]="form.uomId">
+                    <option value="">Select…</option>
+                    @for (u of uomList; track u.id) {
+                    <option [value]="u.id">{{ u.label }}</option>
+                    }
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+
+          <!-- ── STAGE FIELDS ── -->
+          @if (isStageForm || !isEditMode) {
+          <div class="form-section">
+            <div class="fsec-label">
+              <span class="fsec-dot amber"></span>
+              {{ isStageForm ? 'Stage Details' : 'First Growth Stage' }}
+            </div>
+
+            @if (isStageForm && selectedCrop) {
+            <div class="context-chip">
+              <span>{{ getCropEmoji(selectedCrop.CropKey) }}</span>
+              <strong>{{ selectedCrop.CropName }}</strong>
+              <span class="chip-hint">{{ isEditingStage ? 'Editing stage' : 'New stage' }}</span>
+            </div>
+            }
+
+            <div class="field">
+              <label>Stage Name *</label>
+              <input type="text" placeholder="e.g. Germination" [(ngModel)]="form.stageKey" />
+            </div>
+
+            <div class="field-row-2">
+              <div class="field">
+                <label>Day From *</label>
+                <input type="number" min="1" placeholder="1" [(ngModel)]="form.dayFrom" />
+              </div>
+              <div class="field">
+                <label>Day To *</label>
+                <input type="number" min="1" placeholder="30" [(ngModel)]="form.dayTo" />
+              </div>
+            </div>
+
+            <!-- Live stage bar preview -->
+            @if (form.dayFrom && form.dayTo && +form.dayTo > +form.dayFrom) {
+            <div class="stage-preview-box">
+              <div class="spb-label">Preview</div>
+              <div class="spb-track">
+                <div class="spb-fill" [style.left.%]="getStageLeft()" [style.width.%]="getStageWidth()">
+                  <span>{{ form.stageKey || 'Stage' }}</span>
+                </div>
+              </div>
+              <div class="spb-ends">
+                <span>Day {{ form.dayFrom }}</span>
+                <span>Day {{ form.growthDurationDays || form.dayTo }}</span>
+              </div>
+            </div>
+            }
+
+          </div>
+          }
+
+        </div><!-- /form-body -->
+
+        <!-- Form footer -->
+        <div class="form-footer">
+          <button class="btn-ghost" (click)="closeForm()">
+            <i class="bi bi-x"></i> Cancel
+          </button>
+          <button class="btn-primary" (click)="save()" [disabled]="isSaving">
+            @if (isSaving) {
+            <span class="spin"></span> Saving…
+            } @else {
+            <i class="bi bi-check2-square"></i>
+            {{ isEditMode || isEditingStage ? 'Update' : 'Save' }}
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /three-col-layout -->
+</div>

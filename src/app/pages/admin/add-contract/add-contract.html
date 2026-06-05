@@ -1,0 +1,268 @@
+<div class="contract-page-wrapper">
+
+  <h1 class="page-title">Farm <span>Contracts</span></h1>
+
+  <div class="contract-layout">
+    <div class="form-card" [class.editing-mode]="isEditMode">
+
+      <div class="form-card-header">
+        <div class="header-icon">
+          <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-file-earmark-plus'"></i>
+        </div>
+        <h5>{{ isEditMode ? 'Edit Contract' : 'Add Contract' }}</h5>
+        <span class="header-badge">Editing</span>
+      </div>
+
+      <div class="form-card-body">
+
+        <div class="form-field">
+          <label class="field-label">Search Farmer</label>
+
+          <div class="search-field-wrapper">
+            <div class="search-wrapper">
+              <i class="bi bi-search search-icon"></i>
+              <input
+                class="search-input"
+                type="text"
+                placeholder="Type name or phone number…"
+                [(ngModel)]="searchText"
+                (input)="onSearchChange()" />
+            </div>
+            <div *ngIf="farmers.length" class="search-dropdown">
+              <div *ngFor="let f of farmers"
+                   class="search-result-item"
+                   (click)="selectFarmer(f)">
+                <div class="farmer-avatar">{{ f.name.charAt(0) }}</div>
+                <div class="farmer-info">
+                  <div class="name">{{ f.name }}</div>
+                  <div class="phone">{{ f.phone }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="selectedFarmer" class="selected-chip">
+          <i class="bi bi-check-circle-fill chip-icon"></i>
+          <span class="chip-name">{{ selectedFarmer.name }}</span>
+          <button class="chip-clear" (click)="clearFarmer()" title="Clear">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="field-label">Land</label>
+            <div class="select-wrapper">
+              <select [(ngModel)]="form.landId" class="modern-select">
+                <option value="">Select land…</option>
+                <option *ngFor="let l of lands" [value]="l.landId">
+                  {{ l.landLocation }} ({{ l.soilType }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="field-label">Crop</label>
+            <ng-select
+              [items]="crops"
+              bindLabel="CropKey"
+              bindValue="CropId"
+              [(ngModel)]="form.cropId"
+              [loading]="isLoadingCrops"
+              [searchable]="true"
+              [clearable]="false"
+              placeholder="Select crop…"
+              class="crop-ng-select">
+
+              <ng-template ng-option-tmp let-item="item">
+                <div class="crop-option">
+                  🌱 <b>{{ item.CropName }}</b>
+                  <span class="days">{{ item.GrowthDurationDays }}d</span>
+                </div>
+              </ng-template>
+
+            </ng-select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="field-label">Start Date</label>
+            <input type="date" [(ngModel)]="form.startDate" class="modern-input" />
+          </div>
+          <div>
+            <label class="field-label">End Date</label>
+            <input type="date" [(ngModel)]="form.endDate" class="modern-input" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div>
+            <label class="field-label">Rate (₹/Kg)</label>
+            <input type="number" [(ngModel)]="form.rate" class="modern-number" min="0" />
+          </div>
+          <div>
+            <label class="field-label">Expected Yield (Kg)</label>
+            <input type="number" [(ngModel)]="form.yield" class="modern-number" min="0" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button *ngIf="isEditMode" class="btn-cancel" (click)="cancelEdit()">
+            <i class="bi bi-x-lg"></i> Cancel
+          </button>
+          <button class="btn-save" (click)="saveContract()">
+            <i class="bi" [ngClass]="isEditMode ? 'bi-arrow-repeat' : 'bi-check2-square'"></i>
+            {{ isEditMode ? 'Update Contract' : 'Save Contract' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <div class="contracts-panel">
+
+      <div class="panel-header">
+        <h6 class="panel-title">
+          <i class="bi bi-collection"></i>
+          Contracts
+          <span class="count-badge">{{ totalRecords }}</span>
+        </h6>
+
+        <div class="contracts-search">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            placeholder="Search contracts…"
+            [(ngModel)]="contractSearch"
+            (input)="onContractSearch()" />
+        </div>
+      </div>
+      <table class="contracts-table">
+        <thead>
+          <tr>
+            <th>Farmer</th>
+            <th>Crop</th>
+            <th>Rate</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoadingContracts" class="shimmer-row">
+            <td colspan="5"></td>
+          </tr>
+          <tr *ngIf="isLoadingContracts" class="shimmer-row">
+            <td colspan="5"></td>
+          </tr>
+          <tr *ngIf="isLoadingContracts" class="shimmer-row">
+            <td colspan="5"></td>
+          </tr>
+
+          <ng-container *ngIf="!isLoadingContracts">
+            <tr *ngFor="let c of contracts">
+              <td>
+                <div class="farmer-cell">
+                  <div class="mini-avatar">{{ c.farmerName?.charAt(0) }}</div>
+                  {{ c.farmerName }}
+                </div>
+              </td>
+              <td>🌱 {{ c.cropName }}</td>
+              <td><span class="rate-pill">₹{{ c.agreedRatePerKg }}</span></td>
+              <td>
+                <span class="status-pill"
+                  [ngClass]="{
+                    'status-active':  c.status === 'Active',
+                    'status-pending': c.status === 'Pending',
+                    'status-expired': c.status === 'Expired',
+                    'status-null':   !c.status
+                  }">
+                  {{ c.status || 'Pending' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" (click)="loadContractIntoForm(c)">
+                  <i class="bi bi-pencil"></i> Edit
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="contracts.length === 0">
+              <td colspan="5">
+                <div class="empty-state">
+                  <div class="empty-icon">📋</div>
+                  <p>No contracts found</p>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+
+      <div class="mobile-contracts">
+        <div *ngFor="let c of contracts" class="mobile-contract-card">
+          <div class="mcf-header">
+            <div class="mcf-farmer">
+              <div class="farmer-avatar">{{ c.farmerName?.charAt(0) }}</div>
+              {{ c.farmerName }}
+            </div>
+            <span class="status-pill"
+              [ngClass]="{
+                'status-active':  c.status === 'Active',
+                'status-pending': c.status === 'Pending',
+                'status-expired': c.status === 'Expired',
+                'status-null':   !c.status
+              }">
+              {{ c.status || 'Pending' }}
+            </span>
+          </div>
+          <div class="mcf-row"><i class="bi bi-flower1"></i> {{ c.cropName }}</div>
+          <div class="mcf-row"><i class="bi bi-cash"></i> ₹{{ c.agreedRatePerKg }} / Kg</div>
+          <div class="mcf-footer">
+            <small style="color:var(--ink-faint); font-size:.75rem;">
+              {{ c.landLocation || '' }}
+            </small>
+            <button class="btn-edit" (click)="loadContractIntoForm(c)">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="contracts.length === 0" class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>No contracts yet</p>
+        </div>
+      </div>
+
+      <div class="pagination-container" *ngIf="totalPages > 1">
+
+  <div class="pagination-inner">
+
+    <div class="line"></div>
+
+    <button 
+      class="page-btn"
+      (click)="changePage(pageNumber - 1)"
+      [disabled]="pageNumber === 1">
+      <i class="bi bi-chevron-left"></i>
+      Prev
+    </button>
+
+    <div class="page-info">
+      Page {{ pageNumber }} of {{ totalPages }}
+    </div>
+    <button 
+      class="page-btn"
+      (click)="changePage(pageNumber + 1)"
+      [disabled]="pageNumber === totalPages">
+      Next
+      <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <div class="line"></div>
+
+  </div>
+
+</div>
+
+    </div>
+
+  </div>
+</div>

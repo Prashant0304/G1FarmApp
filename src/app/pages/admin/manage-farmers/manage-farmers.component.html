@@ -1,0 +1,593 @@
+<!-- src/app/pages/admin/farmers/farmers.component.html -->
+<div class="farmers-page">
+
+  <!-- ══════ PAGE HEADER ══════ -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">👨‍🌾</div>
+      <div>
+        <h1 class="page-title">Farmer Registry</h1>
+        <p class="page-subtitle">Manage registered farmers and their land holdings</p>
+      </div>
+    </div>
+    <div class="page-header-right">
+      <div class="header-stats">
+        <div class="hstat">
+          <span class="hstat-val">{{ totalRecords }}</span>
+          <span class="hstat-label">Total</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-val green">{{ verifiedCount }}</span>
+          <span class="hstat-label">Verified</span>
+        </div>
+        <div class="hstat-divider"></div>
+        <div class="hstat">
+          <span class="hstat-val amber">{{ totalRecords - verifiedCount }}</span>
+          <span class="hstat-label">Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ LAYOUT ══════ -->
+  <div class="farmers-layout" [class.detail-open]="selectedFarmer">
+
+    <!-- ── COL 1: Farmer List ── -->
+    <div class="col-list">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" placeholder="Search by name, phone or village…" [(ngModel)]="searchText"
+            (input)="onSearch()" />
+          @if (searchText) {
+          <button class="clear-btn" (click)="clearSearch()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          }
+        </div>
+        <div class="filter-row">
+          <button class="filter-chip" [class.active]="filterVerified === null" (click)="setFilter(null)">All</button>
+          <button class="filter-chip" [class.active]="filterVerified === true" (click)="setFilter(true)">
+            <i class="bi bi-patch-check"></i> Verified
+          </button>
+          <button class="filter-chip" [class.active]="filterVerified === false" (click)="setFilter(false)">
+            <i class="bi bi-clock"></i> Pending
+          </button>
+        </div>
+      </div>
+
+      <!-- Skeleton -->
+      @if (isLoading) {
+      <div class="farmer-list">
+        @for (s of skeletons; track s) {
+        <div class="farmer-card sk-card">
+          <div class="sk-avatar"></div>
+          <div class="sk-body">
+            <div class="sk-line w65"></div>
+            <div class="sk-line w45"></div>
+          </div>
+          <div class="sk-badge"></div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Empty -->
+      @else if (farmers.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">👨‍🌾</div>
+        <p class="empty-title">No farmers found</p>
+        <p class="empty-sub">Try adjusting your search or filters</p>
+      </div>
+      }
+
+      <!-- Farmer cards -->
+      @else {
+      <div class="farmer-list">
+        @for (f of farmers; track f.FarmerId; let i = $index) {
+        <div class="farmer-card" [class.is-selected]="selectedFarmer?.FarmerId === f.FarmerId"
+          [style.animation-delay]="(i * 0.04) + 's'" (click)="selectFarmer(f)">
+
+          <div class="farmer-avatar" [class.verified]="f.IsVerified">
+            {{ getInitials(f.Name) }}
+            @if (f.IsVerified) {
+            <div class="verified-badge" title="Verified">
+              <i class="bi bi-patch-check-fill"></i>
+            </div>
+            }
+          </div>
+
+          <div class="farmer-info">
+            <div class="farmer-name">{{ f.Name }}</div>
+            <div class="farmer-meta">
+              <span><i class="bi bi-telephone"></i> {{ f.PhoneNumber }}</span>
+              @if (f.Village) {
+              <span><i class="bi bi-geo-alt"></i> {{ f.Village }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="farmer-right">
+            <div class="land-count-badge" [title]="(f.LandCount || 0) + ' land(s)'">
+              <i class="bi bi-map"></i>
+              {{ f.LandCount || 0 }}
+            </div>
+            <div class="card-chevron">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          </div>
+
+        </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages > 1) {
+      <div class="pagination">
+        <button class="page-btn" [disabled]="pageNumber === 1" (click)="prevPage()">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="page-label">{{ pageNumber }} / {{ totalPages }}</span>
+        <button class="page-btn" [disabled]="pageNumber === totalPages" (click)="nextPage()">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+      }
+      }
+    </div>
+
+    <!-- ── COL 2: Farmer Detail + Edit ── -->
+    <div class="col-detail" [class.col-visible]="selectedFarmer">
+      @if (selectedFarmer) {
+
+      <!-- Detail header -->
+      <div class="detail-header">
+        <div class="detail-farmer-info">
+          <div class="detail-avatar" [class.verified]="selectedFarmer.IsVerified">
+            {{ getInitials(selectedFarmer.Name) }}
+          </div>
+          <div>
+            <div class="detail-name">{{ selectedFarmer.Name }}</div>
+            <div class="detail-sub">
+              @if (selectedFarmer.IsVerified) {
+              <span class="badge-verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+              } @else {
+              <span class="badge-pending"><i class="bi bi-clock"></i> Pending verification</span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="detail-header-actions">
+          <button class="btn-edit-toggle" [class.active]="editMode" (click)="toggleEdit()">
+            <i class="bi" [ngClass]="editMode ? 'bi-x-lg' : 'bi-pencil'"></i>
+            {{ editMode ? 'Cancel' : 'Edit' }}
+          </button>
+          <button class="icon-btn close-btn" (click)="closeDetail()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Farmer form / view -->
+      <div class="detail-scroll">
+
+        <!-- ── Farmer details section ── -->
+        <div class="detail-section">
+          <div class="section-label">
+            <span class="section-dot green"></span> Personal Details
+          </div>
+
+          @if (!editMode) {
+          <!-- View mode -->
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-person"></i> Full Name</div>
+              <div class="info-value">{{ selectedFarmer.Name }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-telephone"></i> Phone</div>
+              <div class="info-value">{{ selectedFarmer.PhoneNumber }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-geo-alt"></i> Village</div>
+              <div class="info-value">{{ selectedFarmer.Village || '—' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-building"></i> District</div>
+              <div class="info-value">{{ selectedFarmer.DistrictName || '—' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-map"></i> State</div>
+              <div class="info-value">{{ selectedFarmer.StateName || '—' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-arrows-angle-expand"></i> Land Size</div>
+              <div class="info-value">{{ selectedFarmer.LandSize ? selectedFarmer.LandSize + ' acres' : '—' }}</div>
+            </div>
+          </div>
+
+          <!-- Verify toggle -->
+          <div class="verify-toggle-row">
+            <span class="verify-label">Verification Status</span>
+            <button class="btn-verify" [class.verified]="selectedFarmer.IsVerified" (click)="toggleVerification()">
+              <i class="bi" [ngClass]="selectedFarmer.IsVerified ? 'bi-patch-check-fill' : 'bi-patch-check'"></i>
+              {{ selectedFarmer.IsVerified ? 'Verified' : 'Mark as Verified' }}
+            </button>
+          </div>
+          }
+
+          @if (editMode) {
+          <!-- Edit mode -->
+          <div class="edit-form">
+            <div class="field-row-2">
+              <div class="field">
+                <label>Full Name *</label>
+                <input type="text" [(ngModel)]="editForm.name" placeholder="Farmer name" />
+              </div>
+              <div class="field">
+                <label>Phone Number *</label>
+                <input type="text" [(ngModel)]="editForm.phoneNumber" placeholder="10-digit number" />
+              </div>
+            </div>
+            <div class="field-row-2">
+              <div class="field">
+                <label>Village</label>
+                <input type="text" [(ngModel)]="editForm.village" placeholder="Village name" />
+              </div>
+              <div class="field">
+                <label>District</label>
+                <div class="select-wrap">
+                  <select [(ngModel)]="editForm.districtId" (click)="onDistrictDropdownOpen()">
+
+                    <option [ngValue]="null">Select district</option>
+
+                    <option *ngFor="let d of districts" [ngValue]="d.districtId">
+
+                      {{ d.districtName }}
+                    </option>
+
+                  </select>
+
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+            </div>
+            <div class="field-row-2">
+              <div class="field">
+                <label>State</label>
+                <div class="select-wrap">
+                  <select [(ngModel)]="editForm.stateId" (click)="onStateDropdownOpen()" (change)="onStateChange()">
+
+                    <option [ngValue]="null">Select state</option>
+
+                    <option *ngFor="let s of states" [ngValue]="s.stateId">
+
+                      {{ s.stateName }}
+                    </option>
+
+                  </select>
+
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+              <div class="field">
+                <label>Total Land Size (acres)</label>
+                <input type="number" [(ngModel)]="editForm.landSize" min="0" placeholder="0.00" />
+              </div>
+            </div>
+
+            <div class="edit-actions">
+              <button class="btn-cancel" (click)="cancelEdit()">
+                <i class="bi bi-x"></i> Cancel
+              </button>
+              <button class="btn-save" (click)="saveFarmer()" [disabled]="isSaving">
+                @if (isSaving) {
+                <span class="spinner"></span> Saving…
+                } @else {
+                <i class="bi bi-check2-square"></i> Save Changes
+                }
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- ── Lands section ── -->
+
+        <div class="detail-section">
+          <div class="section-label-row">
+            <div class="section-label">
+              <span class="section-dot amber"></span>
+              Land Holdings
+              <span class="lands-count">{{ lands.length }}</span>
+            </div>
+            <button class="btn-add-land" (click)="openAddLandForm()">
+              <i class="bi bi-plus-lg"></i> Add Land
+            </button>
+          </div>
+
+          <!-- Lands loading -->
+          @if (isLoadingLands) {
+          <div class="lands-skeleton">
+            @for (s of [1,2]; track s) {
+            <div class="land-sk">
+              <div class="sk-line w80"></div>
+              <div class="sk-line w55"></div>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- No lands -->
+          @else if (lands.length === 0) {
+          <div class="no-lands">
+            <i class="bi bi-map"></i>
+            <p>No land holdings registered</p>
+            <button class="btn-add-land sm" (click)="openAddLandForm()">
+              <i class="bi bi-plus-lg"></i> Add First Land
+            </button>
+          </div>
+          }
+
+          <!-- Land cards -->
+          @else {
+          <div class="lands-list">
+            @for (land of lands; track land.LandId; let i = $index) {
+            <div class="land-card" [class.land-editing]="editingLandId === land.LandId"
+              [style.animation-delay]="(i * 0.07) + 's'">
+
+              <div class="land-card-header">
+                <div class="land-icon-wrap">
+                  <i class="bi bi-geo-fill"></i>
+                </div>
+                <div class="land-main">
+                  <div class="land-location">{{ land.LandLocation }}</div>
+                  <div class="land-tags">
+                    @if (land.SoilType) {
+                    <span class="land-tag soil">
+                      <i class="bi bi-layers"></i> {{ land.SoilType }}
+                    </span>
+                    }
+                    @if (land.WaterSource) {
+                    <span class="land-tag water">
+                      <i class="bi bi-droplet"></i> {{ land.WaterSource }}
+                    </span>
+                    }
+                    @if (land.LandUom) {
+                    <span class="land-tag uom">
+                      <i class="bi bi-rulers"></i> {{ getUomLabel(land.LandUom) }}
+                    </span>
+                    }
+                  </div>
+                </div>
+                <div class="land-actions">
+                  <button class="icon-btn xs edit-btn" (click)="editLand(land)" title="Edit land">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="map-open-btn" *ngIf="land.Latitude && land.Longitude"
+                    (click)="openInMaps(land.Latitude, land.Longitude)">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    Open in Maps
+                  </button>
+                  <button class="icon-btn xs del-btn" (click)="deleteLand(land)" title="Delete land">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Inline land edit form -->
+              @if (editingLandId === land.LandId) {
+              <div class="land-edit-form">
+                <div class="field-row-2">
+                  <div class="field">
+                    <label>Location *</label>
+                    <input type="text" [(ngModel)]="landEditForm.landLocation" />
+                  </div>
+                  <div class="field">
+                    <label>Soil Type</label>
+                    <input type="text" [(ngModel)]="landEditForm.soilType" />
+                    <!-- <div class="select-wrap">
+                              <select [(ngModel)]="landEditForm.soilType">
+                                <option value="">Select…</option>
+                                <option *ngFor="let s of soilTypes" [value]="s">{{ s }}</option>
+                              </select>
+                              <i class="bi bi-chevron-down"></i>
+                            </div> -->
+                  </div>
+                </div>
+                <div class="field-row-2">
+                  <div class="field">
+                    <label>Water Source</label>
+                    <div class="select-wrap">
+                      <select [(ngModel)]="landEditForm.waterSource">
+                        <option value="">Select…</option>
+                        <option *ngFor="let w of waterSources" [value]="w">{{ w }}</option>
+                      </select>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Unit of Measure</label>
+                    <div class="select-wrap">
+                      <select [(ngModel)]="landEditForm.landUom">
+                        <option value="">Select…</option>
+                        <option *ngFor="let u of uomList" [value]="u.uomId">{{ u.uomName }}</option>
+                      </select>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="map-picker-card">
+
+                  <div class="map-coordinates">
+                    <div>
+                      <span>Latitude</span>
+                      <strong>
+                        {{ landEditForm.latitude || 'Not selected' }}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Longitude</span>
+                      <strong>
+                        {{ landEditForm.longitude || 'Not selected' }}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <button class="btn-map-picker" (click)="openMapPicker('edit')">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+                    Select Location from Map
+                  </button>
+
+                </div>
+                <div class="land-edit-actions">
+                  <button class="btn-cancel sm" (click)="cancelLandEdit()">Cancel</button>
+                  <button class="btn-save sm" (click)="saveLand()" [disabled]="isSavingLand">
+                    @if (isSavingLand) { <span class="spinner"></span> } @else { <i class="bi bi-check2"></i> }
+                    Save
+                  </button>
+                </div>
+              </div>
+              }
+
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Add new land form -->
+          @if (addLandMode) {
+          <div class="add-land-form">
+            <div class="add-land-title">
+              <i class="bi bi-map"></i> New Land
+            </div>
+            <div class="field-row-2">
+              <div class="field">
+                <label>Location *</label>
+                <input type="text" [(ngModel)]="newLandForm.landLocation" placeholder="e.g. North Block, Mysuru" />
+              </div>
+              <div class="field">
+                <label>Soil Type</label>
+                <div class="select-wrap">
+                  <select [(ngModel)]="newLandForm.soilType">
+                    <option value="">Select…</option>
+                    <option *ngFor="let s of soilTypes" [value]="s">{{ s }}</option>
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+            </div>
+            <div class="field-row-2">
+              <div class="field">
+                <label>Water Source</label>
+                <div class="select-wrap">
+                  <select [(ngModel)]="newLandForm.waterSource">
+                    <option value="">Select…</option>
+                    <option *ngFor="let w of waterSources" [value]="w">{{ w }}</option>
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+              <div class="field">
+                <label>Unit of Measure</label>
+                <div class="select-wrap">
+                  <select [(ngModel)]="newLandForm.landUom">
+                    <option value="">Select…</option>
+                    <option *ngFor="let u of uomList" [value]="u.uomId">{{ u.uomName }}</option>
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+            </div>
+            <div class="map-picker-card">
+
+              <div class="map-coordinates">
+                <div>
+                  <span>Latitude</span>
+                  <strong>
+                    {{ newLandForm.latitude || 'Not selected' }}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Longitude</span>
+                  <strong>
+                    {{ newLandForm.longitude || 'Not selected' }}
+                  </strong>
+                </div>
+              </div>
+
+              <button class="btn-map-picker" (click)="openMapPicker('new')">
+
+                <i class="bi bi-geo-alt-fill"></i>
+                Select Location from Map
+              </button>
+
+            </div>
+            <div class="land-edit-actions">
+              <button class="btn-cancel sm" (click)="addLandMode = false">Cancel</button>
+              <button class="btn-save sm" (click)="saveNewLand()" [disabled]="isSavingLand">
+                @if (isSavingLand) { <span class="spinner"></span> } @else { <i class="bi bi-plus-lg"></i> }
+                Add Land
+              </button>
+            </div>
+          </div>
+          }
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+      </div><!-- /detail-scroll -->
+      }
+
+      <!-- Placeholder -->
+      @else {
+      <div class="detail-placeholder">
+        <div class="placeholder-icon">👆</div>
+        <p>Select a farmer to view details and land holdings</p>
+      </div>
+
+      }
+    </div>
+
+  </div>
+  @if (showMapPicker) {
+  <div class="map-modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="map-modal">
+      <div class="map-modal-header">
+        <h3><i class="bi bi-geo-alt-fill"></i> Select Land Location</h3>
+        <button class="map-close-btn" (click)="closeMapPicker()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div #landPickerMap class="land-picker-map"></div>
+      <div class="map-modal-footer">
+        <span class="map-hint">
+          <i class="bi bi-info-circle"></i>
+          {{ selectedLat ? ('Lat: ' + (selectedLat | number:'1.4-6') + ' Lng: ' + (selectedLng | number:'1.4-6')) : 'Tap
+          anywhere on the map to drop a pin' }}
+        </span>
+        <div class="map-footer-actions">
+          <button class="btn-cancel" (click)="closeMapPicker()">Cancel</button>
+          <button class="btn-save" (click)="confirmMapLocation()" [disabled]="!selectedLat">
+            <i class="bi bi-check2"></i> Confirm Location
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

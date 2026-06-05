@@ -1,0 +1,69 @@
+<div class="tab-content">
+    <div class="projects-list">
+        <div class="project-detail-card" *ngFor="let inv of investments; trackBy: trackByInvestorId">
+            <div class="pdc-left">
+                <div class="pdc-badge" [ngClass]="getStatusClass(inv.project.status)">{{ inv.project.status }}</div>
+                <div class="pdc-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M17 8C8 10 5.9 16.17 3.82 19.18A1 1 0 0 0 5.06 20.5C6.96 19.3 10.66 17.5 14 18c5 .5 7-2.7 7-2.7C20.9 12.7 17 8 17 8z"
+                            fill="currentColor" />
+                    </svg>
+                </div>
+                <div class="pdc-info">
+                    <h3 class="pdc-name">{{ inv.project.projectName }}</h3>
+                    <span class="pdc-code">{{ inv.project.projectCode }}</span>
+                    <span class="pdc-loc">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                                fill="currentColor" />
+                        </svg>
+                        {{ inv.project.location }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="pdc-stats">
+                <div class="pdc-stat">
+                    <span class="pdc-stat-label">Total Plants</span>
+                    <span class="pdc-stat-val">{{ inv.project.totalPlants }}</span>
+                </div>
+                <div class="pdc-stat">
+                    <span class="pdc-stat-label">My Plants</span>
+                    <span class="pdc-stat-val highlight">{{ inv.plantCount }}</span>
+                </div>
+                <div class="pdc-stat">
+                    <span class="pdc-stat-label">My Investment</span>
+                    <span class="pdc-stat-val">{{ formatCurrency(inv.amountInvested) }}</span>
+                </div>
+                <div class="pdc-stat">
+                    <span class="pdc-stat-label">Project Est.</span>
+                    <span class="pdc-stat-val">{{ formatCurrency(inv.project.estimatedInvestment) }}</span>
+                </div>
+                <div class="pdc-stat">
+                    <span class="pdc-stat-label">Start</span>
+                    <span class="pdc-stat-val">{{ formatDate(inv.project.startDate) }}</span>
+                </div>
+                <div class="pdc-stat">
+                    <span class="pdc-stat-label">Maturity</span>
+                    <span class="pdc-stat-val">{{ formatDate(inv.project.endDate) }}</span>
+                </div>
+            </div>
+
+            <div class="pdc-crops">
+                <h4 class="pdc-crops-title">Crops in Project</h4>
+                <div class="crop-list">
+                    <div class="crop-item" *ngFor="let crop of inv.project.crops">
+                        <div class="crop-item-name">{{ crop.cropKey }}</div>
+                        <div class="crop-item-cat">{{ crop.categoryKey }}</div>
+                        <div class="crop-item-stats">
+                            <span>{{ crop.plantCount }} plants</span>
+                            <span>{{ crop.estimatedYieldKg | number }}kg est.</span>
+                            <span>{{ formatDate(crop.expectedHarvestDate) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

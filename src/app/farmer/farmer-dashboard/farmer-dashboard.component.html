@@ -1,0 +1,424 @@
+<div class="shell">
+
+
+    <aside class="sidebar" [class.open]="sidebarOpen()">
+
+        <div class="sidebar-logo">
+            <div class="logo-icon">🌿</div>
+            <span class="logo-text">G1Farm</span>
+        </div>
+
+        <div class="user-card">
+            <div class="avatar">
+                {{ user()?.name?.charAt(0) || 'F' }}
+            </div>
+            <div class="user-info">
+
+                <div class="name-row">
+
+                    <strong>
+                        {{ user()?.name || 'Farmer' }}
+                    </strong>
+
+
+                    <div *ngIf="profile()?.isVerified" class="verified-badge">
+
+                        ✔
+                    </div>
+
+                </div>
+
+                <span>{{ user()?.village || '—' }}</span>
+
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-item" [class.active]="activeMenu() === 'dashboard'" (click)="setMenu('dashboard')">
+
+                <span class="nav-icon">🏠</span>
+                Dashboard
+
+            </button>
+
+            <button class="nav-item" [class.active]="activeMenu() === 'lands'" (click)="setMenu('lands')">
+
+                <span class="nav-icon">🌾</span>
+                My Lands
+
+            </button>
+
+            <button class="nav-item" [class.active]="activeMenu() === 'profile'" (click)="setMenu('profile')">
+
+                <span class="nav-icon">👤</span>
+                Profile
+
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button type="button" class="btn-logout" (click)="logout()" title="Sign out of your account">
+                <svg class="logout-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span class="logout-text">Logout</span>
+            </button>
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" *ngIf="sidebarOpen()" (click)="toggleSidebar()">
+    </div>
+
+    <main class="main">
+
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button class="btn-menu" (click)="toggleSidebar()">
+                    ☰
+                </button>
+
+                <div class="welcome-block">
+
+                    <span class="welcome-label">
+                        Welcome back
+                    </span>
+
+                    <div class="welcome-row">
+
+                        <h2>
+                            {{ user()?.name || 'Farmer' }}
+                        </h2>
+
+                        <div *ngIf="profile()?.isVerified" class="verified-badge">
+                            ✔
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <div class="content" *ngIf="isLoading()">
+            <div class="loading-card">
+                <div class="loading-spinner"></div>
+                <p>Loading farmer details…</p>
+            </div>
+        </div>
+
+
+        <div class="content dashboard-grid" *ngIf="!isLoading()">
+
+
+            <div *ngIf="activeMenu() === 'dashboard'">
+
+
+                <div class="two-col">
+
+                    <div class="weather-card-modern" *ngIf="weather()">
+
+
+                        <div class="weather-left">
+                            <img class="weather-icon"
+                                [src]="'https://openweathermap.org/img/wn/' + weather()?.weather[0]?.icon + '@2x.png'" />
+
+                            <div class="temp-block">
+                                <h1>{{ weather()?.main?.temp | number:'1.0-0' }}°</h1>
+                                <span>{{ weather()?.weather[0]?.main }}</span>
+                            </div>
+                        </div>
+
+
+                        <div class="weather-right">
+
+                            <div class="weather-item">
+                                <span>Humidity</span>
+                                <strong>{{ weather()?.main?.humidity }}%</strong>
+                            </div>
+
+                            <div class="weather-item">
+                                <span>Wind</span>
+                                <strong>{{ weather()?.wind?.speed }} m/s</strong>
+                            </div>
+
+                            <div class="weather-item">
+                                <span>Feels Like</span>
+                                <strong>
+                                    {{ weather()?.main?.feels_like | number:'1.0-0' }}°C
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="card">
+                        <h3>📅 Today's Tasks</h3>
+                        <p>Irrigate crops</p>
+                        <p>Apply fertilizer</p>
+                    </div>
+                </div>
+
+                🌱 BELOW
+                <div class="two-col">
+
+                    <div class="card">
+                        <h3>🌱 Crop List</h3>
+                        <p>Rice - Growing</p>
+                        <p>Tomato - Harvest Soon</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🌾 Land List</h3>
+
+                        <div *ngFor="let land of lands()" class="land-box">
+                            <div class="info-row">
+                                <span>{{ land.landLocation }}</span>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="two-col">
+
+                    <div class="card">
+                        <h3>📊 Analytics</h3>
+                        <p>Total Lands: {{ lands().length }}</p>
+                    </div>
+
+                    <div class="card alert-card">
+                        <h3>🚨 Alerts</h3>
+                        <p>Heavy rain expected</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card" *ngIf="activeMenu() === 'lands'">
+
+                <div class="lands-header">
+
+                    <h2>🌾 My Lands</h2>
+
+                    <button class="add-land-btn" (click)="onClickshowAddLandForm()">
+                        + Add Land
+                    </button>
+
+                </div>
+
+
+
+                <div class="add-land-form" *ngIf="showAddLandForm">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Land Location</label>
+                            <input type="text" [(ngModel)]="newLand.landLocation">
+                        </div>
+
+                        <div class="form-group">
+                            <label>State</label>
+                            <select [(ngModel)]="newLand.stateId" (change)="onStateChange()">
+                                <option [ngValue]="null">Select State</option>
+                                <option *ngFor="let s of state" [ngValue]="s.stateId">
+                                    {{ s.stateName }}
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>District</label>
+                            <select [(ngModel)]="newLand.districtId" (change)="onDistrictChange()"
+                                [disabled]="!districts.length">
+
+                                <option [ngValue]="null">Select District</option>
+
+                                <option *ngFor="let d of districts" [ngValue]="d.districtId">
+                                    {{ d.districtName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Hobli</label>
+
+                            <select [(ngModel)]="newLand.hobliId" [disabled]="!hobli.length">
+
+                                <option [ngValue]="null">Select Hobli</option>
+
+                                <option *ngFor="let h of hobli" [ngValue]="h.hobliId">
+                                    {{ h.hobliName }}
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>Soil Type</label>
+                            <input type="text" [(ngModel)]="newLand.soilType">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Water Source</label>
+                            <input type="text" [(ngModel)]="newLand.waterSource">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Land Size</label>
+                            <input type="number" [(ngModel)]="newLand.landSize">
+                        </div>
+
+                        <div class="form-group">
+                            <label>UOM</label>
+
+                            <select [(ngModel)]="newLand.uomId">
+
+                                <option *ngFor="let uom of uomList()" [value]="uom.uomId">
+
+                                    {{ uom.uomName }}
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <input type="number" [(ngModel)]="newLand.latitude">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <input type="number" [(ngModel)]="newLand.longitude">
+                        </div>
+
+                    </div>
+
+                    <button class="save-btn" (click)="addLand()">
+                        Save Land
+                    </button>
+                    <button class="cancel-btn" (click)="cancelLand()">Cancel</button>
+
+                </div>
+
+
+
+
+
+                <div class="lands-container">
+                    <div *ngFor="let land of lands()" class="land-card">
+
+                        <div class="land-header">
+
+                            <div class="land-title">
+                                <h3>{{ land.landLocation }}</h3>
+                                <span>{{ land.districtName }}, {{ land.stateName }}</span>
+                            </div>
+                        </div>
+
+                        <div class="land-details">
+
+                            <div class="detail-item">
+                                <span>State</span>
+                                <strong>{{ land.stateName }}</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>District</span>
+                                <strong>{{ land.districtName }}</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Hobli</span>
+                                <strong>{{ land.hobliName }}</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Soil Type</span>
+                                <strong>{{ land.soilType }}</strong>
+                            </div>
+
+                            <div class="detail-item">
+                                <span>Water Source</span>
+                                <strong>{{ land.waterSource }}</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" *ngIf="activeMenu() === 'profile'">
+
+                <h2>👤 Farmer Profile</h2>
+
+                <div class="profile-grid">
+
+                    <div class="profile-item">
+                        <span>Name</span>
+                        <strong>{{ profile()?.name }}</strong>
+                    </div>
+
+                    <div class="profile-item">
+
+                        <span>Phone</span>
+
+                        <strong>{{ profile()?.phoneNumber }}</strong>
+                    </div>
+
+                    <div class="profile-item">
+                        <span>Village</span>
+                        <strong>{{ profile()?.village }}</strong>
+                    </div>
+
+                    <div class="profile-item">
+                        <span>District</span>
+                        <strong>{{ profile()?.districtName }}</strong>
+                    </div>
+
+                    <div class="profile-item">
+                        <span>State</span>
+                        <strong>{{ profile()?.stateName }}</strong>
+                    </div>
+
+                    <div class="profile-item">
+                        <span>Total Lands</span>
+                        <strong>{{ lands().length }}</strong>
+                    </div>
+
+                    <div class="profile-item">
+                        <span>Land Size</span>
+                        <strong>
+                            {{ profile()?.landSize }} {{ profile()?.uomName }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+    </main>
+
+</div>
