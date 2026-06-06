@@ -101,6 +101,7 @@ button {
   font-weight: 500;
   transition: all 0.15s;
   white-space: nowrap;
+  text-decoration: none;
 }
 .nav-item:hover {
   background: rgba(255, 255, 255, 0.08);

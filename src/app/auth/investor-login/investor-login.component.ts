@@ -52,7 +52,7 @@ export class InvestorLoginComponent {
         localStorage.setItem('investorId', res.investorId);
 
         this.isLoading = false;
-        this.router.navigate(['investor/investor-dashboard']);
+        this.router.navigate(['investor/overview']);
       },
 
       error: (err) => {

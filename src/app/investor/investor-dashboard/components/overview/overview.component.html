@@ -1,6 +1,6 @@
-<div class="tab-content">
+<div class="tab-content" *ngIf="activeTab === 'overview'">
 
-    <!-- KPI Grid -->
+
     <div class="kpi-grid">
         <div class="kpi-card kpi-primary">
             <div class="kpi-icon-wrap">
@@ -12,7 +12,7 @@
             </div>
             <div class="kpi-body">
                 <span class="kpi-label">Total Invested</span>
-                <span class="kpi-value">{{ formatCurrency(dashboard?.totalInvested) }}</span>
+                <span class="kpi-value">{{dashboard?.totalInvested }}</span>
                 <span class="kpi-delta positive">+₹2.9L this year</span>
             </div>
         </div>
@@ -62,21 +62,129 @@
         </div>
     </div>
 
-    <!-- Crop Allocation -->
-    <div class="chart-card" *ngIf="cropAllocation.length">
-        <div class="card-header">
-            <h2 class="card-title">Crop Allocation</h2>
-            <p class="card-subtitle">Portfolio distribution by category</p>
-        </div>
-        <div class="allocation-list">
-            <div class="alloc-row" *ngFor="let item of cropAllocation">
-                <span class="alloc-label">{{ item.label }}</span>
-                <div class="alloc-bar-wrap">
-                    <div class="alloc-bar" [style.width.%]="item.value" [style.background]="item.color"></div>
+    <!-- Charts Row -->
+    <div class="charts-row">
+        <!-- Bar Chart: Monthly Activity -->
+        <div class="chart-card chart-main">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Investment Activity</h2>
+                    <p class="card-subtitle">Last 7 months</p>
                 </div>
-                <span class="alloc-pct">{{ item.value }}%</span>
-                <span class="alloc-amt">₹{{ item.amount | number }}</span>
+                <div class="legend-row">
+                    <span class="legend-dot" style="background:#3B6D11"></span><span
+                        class="legend-label">Invested</span>
+                    <span class="legend-dot" style="background:#97C459"></span><span class="legend-label">Returns</span>
+                </div>
             </div>
+            <div class="bar-chart">
+                <div class="bar-group" *ngFor="let d of investments">
+                    <div class="bars">
+                        <div class="bar bar-invested" [style.height.px]="d.invested / 1000"
+                            [attr.title]="'Invested: ' + formatCurrency(d.invested)"></div>
+                        <div class="bar bar-returns" [style.height.px]="d.returns / 1000"
+                            [attr.title]="'Returns: ' + formatCurrency(d.returns)"></div>
+                    </div>
+                    <span class="bar-label">{{ d.month }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Donut: Crop Allocation -->
+        <div class="chart-card chart-side">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Crop Allocation</h2>
+                    <p class="card-subtitle">By category</p>
+                </div>
+            </div>
+            <div class="donut-wrapper">
+                <svg class="donut-svg" viewBox="0 0 120 120">
+                    <!-- Fruits 55% -->
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="#3B6D11" stroke-width="18"
+                        stroke-dasharray="155.5 127.3" stroke-dashoffset="0" transform="rotate(-90 60 60)" />
+                    <!-- Timber 32% -->
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="#639922" stroke-width="18"
+                        stroke-dasharray="90.5 192.3" stroke-dashoffset="-155.5" transform="rotate(-90 60 60)" />
+                    <!-- Exotic 13% -->
+                    <circle cx="60" cy="60" r="45" fill="none" stroke="#97C459" stroke-width="18"
+                        stroke-dasharray="36.8 246" stroke-dashoffset="-246" transform="rotate(-90 60 60)" />
+                    <text x="60" y="56" text-anchor="middle" class="donut-pct">{{
+                        investor?.roiPercentage?.toFixed(1) }}%</text>
+                    <text x="60" y="68" text-anchor="middle" class="donut-sub">ROI</text>
+                </svg>
+                <div class="donut-legend">
+                    <div class="donut-item" *ngFor="let c of cropAllocation">
+                        <span class="donut-dot" [style.background]="c.color"></span>
+                        <span class="donut-name">{{ c.label }}</span>
+                        <span class="donut-pct-label">{{ c.value }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Investments Table -->
+    <div class="table-card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Recent Investments</h2>
+                <p class="card-subtitle">Latest 4 project activities</p>
+            </div>
+            <button class="btn-link" (click)="setActiveTab('portfolio')">View All →</button>
+        </div>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Crop</th>
+                        <th>Invested</th>
+                        <th>Expected Return</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let inv of investments; trackBy: trackByInvestorId">
+
+                        <td>
+                            <div class="proj-name">{{ inv?.project?.projectName }}</div>
+                            <!-- <div class="proj-code">{{ inv?.project?.projectCode }}</div> -->
+                        </td>
+
+                        <td>
+                            <span class="crop-tag">{{ inv?.cropKey }}</span>
+                        </td>
+
+                        <td class="amount-cell">
+                            {{ formatCurrency(inv?.amountInvested) }}
+                        </td>
+
+                        <td class="return-cell">
+                            {{ formatCurrency(inv?.expectedReturn) }}
+                        </td>
+
+                        <td>
+                            <div class="progress-wrap">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" [style.width.%]="getProjectProgress(inv)">
+                                    </div>
+                                </div>
+                                <span class="progress-text">
+                                    {{ getProjectProgress(inv) }}%
+                                </span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="status-badge" [ngClass]="getStatusClass(inv?.status)">
+                                {{ inv?.status }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

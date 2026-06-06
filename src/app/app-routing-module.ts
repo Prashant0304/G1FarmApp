@@ -2,14 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LayoutComponent } from './shared/layout/layout.component';
 import { AddContract } from './pages/admin/add-contract/add-contract';
-import { FarmerDashboardComponent } from './farmer/farmer-dashboard/farmer-dashboard.component';
 
 const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
   },
-  // All admin pages — wrapped in LayoutComponent (header + sidebar)
+
   {
     path: 'admin',
     component: LayoutComponent,

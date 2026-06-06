@@ -16,7 +16,6 @@ import { HeaderComponent } from './investor-dashboard/components/header/header.c
 import { OverviewComponent } from './investor-dashboard/components/overview/overview.component';
 
 const routes: Routes = [
-  { path: 'investor-dashboard', component: InvestorDashboardComponent },
   {
     path: 'investor',
     component: InvestorLayoutComponent,

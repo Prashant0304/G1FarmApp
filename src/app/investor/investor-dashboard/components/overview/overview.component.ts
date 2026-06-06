@@ -8,10 +8,13 @@ import { InvestorService } from '../../../investor.service';
   styleUrls: ['./overview.component.css'],
 })
 export class OverviewComponent implements OnInit {
+  activeTab = 'overview';
+  investor: any;
   investorId = Number(localStorage.getItem('investorId')) || 1;
   dashboard: any = {};
   cropAllocation: any[] = [];
   loading = false;
+  investments: any[] = [];
 
   constructor(private investorService: InvestorService) {}
 
@@ -55,5 +58,43 @@ export class OverviewComponent implements OnInit {
 
   formatCurrency(amount: number): string {
     return '₹' + Number(amount || 0).toLocaleString('en-IN');
+  }
+
+  trackByInvestorId(index: number, item: any): number {
+    return item.projectInvestorId;
+  }
+
+  getProjectProgress(inv: any): number {
+    const start = new Date(inv.project.startDate).getTime();
+    const end = new Date(inv.project.endDate).getTime();
+    const now = new Date().getTime();
+
+    return Math.max(
+      0,
+      Math.min(100, Math.round(((now - start) / (end - start)) * 100)),
+    );
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Active':
+        return 'status-active';
+
+      case 'Completed':
+        return 'status-completed';
+
+      case 'Planning':
+        return 'status-planning';
+
+      case 'OnHold':
+        return 'status-hold';
+
+      default:
+        return '';
+    }
+  }
+
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
   }
 }
